@@ -4,8 +4,10 @@ import 'ScreenDeliver.dart';
 import 'TabItem.dart';
 
 class OrderTabScreen extends StatelessWidget {
-  final Coffee coffee;
-  const OrderTabScreen({super.key, required this.coffee});
+  final List<Coffee> coffees;
+
+  const OrderTabScreen({super.key, required this.coffees});
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -33,9 +35,8 @@ class OrderTabScreen extends StatelessWidget {
                 indicatorSize: TabBarIndicatorSize.tab,
                 dividerColor: Colors.transparent,
                 indicator: BoxDecoration(
-                  color: Colors.brown,
-                  borderRadius: BorderRadius.all(Radius.circular(10))
-                ),
+                    color: Colors.brown,
+                    borderRadius: BorderRadius.all(Radius.circular(10))),
                 labelColor: Colors.white,
                 unselectedLabelColor: Colors.black54,
                 tabs: [
@@ -48,7 +49,7 @@ class OrderTabScreen extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            Center(child: Deliver(coffee: coffee)),
+            Center(child: Deliver(coffees: coffees)),
             Center(child: Text('Pick Up Tab Content')),
           ],
         ),

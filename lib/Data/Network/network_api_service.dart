@@ -19,17 +19,19 @@ class NetworkApiService extends BaseApiService {
     return responseJson;
   }
 
+
   @override
-  Future getPostApiResponse(String url,dynamic data) async{
+  Future getPostApiResponse(String url, dynamic data) async {
     dynamic responseJson;
-    try{
-      Response response=await post(
+    try {
+      Response response = await post(
         Uri.parse(url),
-        body: data
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(data), // Truyền data đã là Map<String, dynamic> rồi
       ).timeout(Duration(seconds: 10));
-      responseJson= returnResponse(response);
-    }on SocketException {
-      throw FetchDataException('No Internet Connect');
+      responseJson = returnResponse(response);
+    } on SocketException {
+      throw FetchDataException('No Internet Connection');
     }
     return responseJson;
   }
@@ -50,5 +52,5 @@ class NetworkApiService extends BaseApiService {
             +'with status code '+response.statusCode.toString());
     }
   }
-  
+
 }

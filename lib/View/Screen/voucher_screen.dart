@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../Model/voucher_dto.dart';
@@ -8,7 +7,8 @@ import '../../ViewModel/voucher_view_model.dart';
 class VoucherScreen extends StatefulWidget {
   final List<Voucher> selectedVouchers;
 
-  const VoucherScreen({Key? key, required this.selectedVouchers}) : super(key: key);
+  const VoucherScreen({Key? key, required this.selectedVouchers})
+      : super(key: key);
 
   @override
   _VoucherScreenState createState() => _VoucherScreenState();
@@ -20,9 +20,10 @@ class _VoucherScreenState extends State<VoucherScreen> {
   @override
   void initState() {
     super.initState();
-    selectedVouchers = List.from(widget.selectedVouchers); // Sao chép danh sách voucher đã chọn
+    selectedVouchers = List.from(widget.selectedVouchers);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<VoucherViewModel>(context, listen: false).fetchVoucherListApi();
+      Provider.of<VoucherViewModel>(context, listen: false)
+          .fetchVoucherListApi();
     });
   }
 
@@ -40,13 +41,14 @@ class _VoucherScreenState extends State<VoucherScreen> {
       ),
       body: Consumer<VoucherViewModel>(
         builder: (context, voucherViewModel, child) {
-          List<Voucher> availableVouchers = voucherViewModel.voucherList.data?.data ?? [];
-
+          List<Voucher> availableVouchers =
+              voucherViewModel.voucherList.data?.data ?? [];
           switch (voucherViewModel.voucherList.status!) {
             case Status.LOADING:
               return const Center(child: CircularProgressIndicator());
             case Status.ERROR:
-              return Center(child: Text(voucherViewModel.voucherList.message.toString()));
+              return Center(
+                  child: Text(voucherViewModel.voucherList.message.toString()));
             case Status.COMPLETED:
               return ListView.builder(
                 itemCount: availableVouchers.length,
@@ -60,7 +62,8 @@ class _VoucherScreenState extends State<VoucherScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(voucher.description ?? "No description"),
-                        Text("Discount: ${voucher.discount?.toStringAsFixed(0) ?? '0'}%"),
+                        Text(
+                            "Discount: ${voucher.discount?.toStringAsFixed(0) ?? '0'}%"),
                         Text("Valid from: ${voucher.validFrom}"),
                         Text("Valid until: ${voucher.validUntil}"),
                       ],
@@ -86,6 +89,3 @@ class _VoucherScreenState extends State<VoucherScreen> {
     );
   }
 }
-
-
-

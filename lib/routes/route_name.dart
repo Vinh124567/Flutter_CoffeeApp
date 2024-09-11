@@ -7,4 +7,5 @@ class RouteName{
   static const String onboard="onboard_screen";
   static const String voucher="voucher_screen";
   static const String address="address_screen";
+  static const String newaddress="new_address_screen";
 }

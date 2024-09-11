@@ -6,7 +6,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-
+import 'View/StateDeliverScreen/CoffeeQuantityProvider.dart';
+import 'ViewModel/address_view_model.dart';
 import 'ViewModel/voucher_view_model.dart';
 
 void main() async {
@@ -25,6 +26,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthViewModel()),
         ChangeNotifierProvider(create: (_) => VoucherViewModel()),
         ChangeNotifierProvider(create: (_) => HomeViewModel()),
+        ChangeNotifierProvider(create: (_) => AddressViewModel()),
+        ChangeNotifierProvider(create: (_) => CoffeeQuantityProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

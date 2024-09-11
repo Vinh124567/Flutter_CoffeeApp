@@ -13,12 +13,16 @@ class DetailPage extends StatefulWidget {
   const DetailPage({super.key, required this.coffee});
   final Coffee coffee;
 
+
+
   @override
   State<DetailPage> createState() => _DetailPageState();
 }
 
 class _DetailPageState extends State<DetailPage> {
   String sizeSelected = 'M';
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -271,6 +275,8 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   Widget buildPrice() {
+    List<Coffee> selectedCoffees = [];
+    selectedCoffees.add(widget.coffee);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       decoration: const BoxDecoration(
@@ -317,7 +323,7 @@ class _DetailPageState extends State<DetailPage> {
             child: ButtonPrimary(
               title: 'Buy Now',
               onTap: () {
-                Navigator.pushNamed(context, RouteName.order,arguments: widget.coffee);
+                Navigator.pushNamed(context, RouteName.order,arguments: selectedCoffees);
               },
             ),
           )

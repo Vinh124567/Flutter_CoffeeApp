@@ -4,8 +4,8 @@ import 'package:gap/gap.dart';
 import '../Widget/WidgetOrderScreen/OrderTabController.dart';
 
 class Order extends StatefulWidget {
-  final Coffee coffee;
-  const Order({super.key,required this.coffee});
+  final List<Coffee> coffees;
+  const Order({super.key,required this.coffees});
 
   @override
   State<Order> createState() => _OrderState();
@@ -19,7 +19,7 @@ class _OrderState extends State<Order> {
         children: [
           Gap(40), // Khoảng cách trên cùng của màn hình
           Expanded(
-            child: OrderTabScreen(coffee: widget.coffee),
+            child: OrderTabScreen(coffees: widget.coffees),
           ),
         ],
       ),
