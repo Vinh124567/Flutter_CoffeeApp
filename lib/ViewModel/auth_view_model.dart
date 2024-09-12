@@ -1,9 +1,12 @@
+import 'package:coffee_shop/Repository/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../Model/user_dto.dart';
 import 'FirebaseAuth/auth_service.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final AuthService _authService = AuthService();
+  AuthRepository authRepository= AuthRepository();
   bool _loading = false;
   User? _user;
   String? _errorMessage;
@@ -38,19 +41,27 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   // Đăng ký
-  Future<void> signUp(String email, String password) async {
-    setLoading(true);
-    setErrorMessage(null);
+  Future<void> registerAndPushUser(String email, String password, String userName) async {
+    setLoading(true); // Bắt đầu trạng thái loading
+    setErrorMessage(null); // Xóa thông báo lỗi trước khi bắt đầu
+
     try {
+      // Đăng ký người dùng với email và mật khẩu
       _user = await _authService.createUserWithEmailAndPassword(email, password);
-      setLoading(false);
-      notifyListeners();
-      print('Đăng ký thành công, user: $_user');
+      // Tạo đối tượng User với thông tin đã đăng ký
+      final user = Users(id: _user?.uid, userName: userName, email: _user?.email);
+      // Gửi thông tin người dùng lên máy chủ
+      await authRepository.createUserAccount(user);
+      setLoading(false); // Kết thúc trạng thái loading
+      notifyListeners(); // Cập nhật giao diện người dùng
     } catch (e) {
-      setLoading(false);
-      setErrorMessage(e.toString());
+      setLoading(false); // Kết thúc trạng thái loading ngay cả khi có lỗi
+      setErrorMessage(e.toString()); // Cập nhật thông báo lỗi
+      notifyListeners(); // Cập nhật giao diện người dùng
     }
   }
+
+
 
   // Đăng xuất
   Future<void> signOut() async {

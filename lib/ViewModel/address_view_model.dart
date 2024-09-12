@@ -3,11 +3,14 @@ import 'package:coffee_shop/Model/address_dto.dart';
 import 'package:coffee_shop/Repository/address_repository.dart';
 import 'package:flutter/cupertino.dart';
 
+import 'auth_view_model.dart';
+
 class AddressViewModel with ChangeNotifier {
 
   Address? _selectedAddress;
 
   Address? get selectedAddress => _selectedAddress;
+
 
   void setSelectedAddress(Address address) {
     _selectedAddress = address;
@@ -15,9 +18,10 @@ class AddressViewModel with ChangeNotifier {
   }
 
   final _myRepo = AddressRepository();
-
   ApiResponse<AddressDTO> addressList = ApiResponse.loading();
   ApiResponse<Address> createAddressResponse = ApiResponse.loading();
+
+
 
   void setAddressList(ApiResponse<AddressDTO> response) {
     addressList = response;
@@ -29,10 +33,10 @@ class AddressViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchAddressListApi() async {
+  Future<void> fetchAddressListApi(String userId) async {
     setAddressList(ApiResponse.loading());
     try {
-      AddressDTO addresses = await _myRepo.fetchAddressList("1");
+      AddressDTO addresses = await _myRepo.fetchAddressList(userId);
       setAddressList(ApiResponse.completed(addresses));
     } catch (error) {
       setAddressList(ApiResponse.error(error.toString()));

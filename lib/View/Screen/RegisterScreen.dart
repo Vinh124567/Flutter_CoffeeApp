@@ -12,12 +12,14 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController(); // Controller cho username
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
+    _usernameController.dispose(); // Dispose controller khi không dùng nữa
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -53,6 +55,24 @@ class _RegisterState extends State<Register> {
                         style: const TextStyle(color: Colors.red),
                       ),
                     const SizedBox(height: 10),
+                    // TextFormField cho username
+                    TextFormField(
+                      controller: _usernameController,
+                      decoration: InputDecoration(
+                        labelText: "Username",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        prefixIcon: const Icon(Icons.person),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Vui lòng nhập tên người dùng';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 30),
                     TextFormField(
                       controller: _emailController,
                       decoration: InputDecoration(
@@ -114,9 +134,10 @@ class _RegisterState extends State<Register> {
                           ? null
                           : () {
                         if (_formKey.currentState!.validate()) {
-                          authViewModel.signUp(
+                          authViewModel.registerAndPushUser(
                             _emailController.text,
                             _passwordController.text,
+                            _usernameController.text
                           );
                         }
                       },

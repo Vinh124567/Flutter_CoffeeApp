@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:coffee_shop/Model/address_dto.dart';
 import 'package:coffee_shop/ViewModel/address_view_model.dart';
 import '../../Data/Response/status.dart';
+import '../../ViewModel/auth_view_model.dart';
 
 class AddAddressScreen extends StatefulWidget {
   const AddAddressScreen({super.key});
@@ -18,6 +19,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authViewModel = Provider.of<AuthViewModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Address'),
@@ -49,7 +51,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                       address: _addressController.text,
                       phone: _phoneController.text,
                       name: _nameController.text,
-                      userId:"1"// Thêm 'name'
+                      userId:authViewModel.user?.uid.toString()// Thêm 'name'
                     );
                     viewModel.addAddressApi(
                       address, // Truyền dữ liệu Address vào data

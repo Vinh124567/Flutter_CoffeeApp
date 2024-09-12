@@ -1,3 +1,4 @@
+import 'package:coffee_shop/ViewModel/auth_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
@@ -8,7 +9,6 @@ import '../../routes/route_name.dart';
 
 class AddressPage extends StatefulWidget {
   final Address? selectedAddress;
-
   const AddressPage({super.key, this.selectedAddress});
 
   @override
@@ -18,6 +18,7 @@ class AddressPage extends StatefulWidget {
 class _AddressPageState extends State<AddressPage> {
   int? _selectedIndex;
 
+
   @override
   void initState() {
     super.initState();
@@ -25,12 +26,14 @@ class _AddressPageState extends State<AddressPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final addressViewModel =
           Provider.of<AddressViewModel>(context, listen: false);
-      addressViewModel.fetchAddressListApi();
+           final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+          addressViewModel.fetchAddressListApi(authViewModel.user!.uid.toString());
+
 
       // Kiểm tra nếu đã có địa chỉ được chọn trước đó và đánh dấu nó
       if (widget.selectedAddress != null) {
         final selectedAddress = widget.selectedAddress;
-        addressViewModel.fetchAddressListApi().then((_) {
+        addressViewModel.fetchAddressListApi(authViewModel.user!.uid.toString()).then((_) {
           final selectedIndex =
               addressViewModel.addressList.data?.data?.indexWhere(
             (address) => address.id == selectedAddress?.id,
@@ -211,9 +214,10 @@ class _AddressPageState extends State<AddressPage> {
         onPressed: () async {
           final result =
               await Navigator.pushNamed(context, RouteName.newaddress);
+          final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
           if (result == true) {
             Provider.of<AddressViewModel>(context, listen: false)
-                .fetchAddressListApi();
+                .fetchAddressListApi(authViewModel.user!.uid.toString());
           }
         },
         backgroundColor: Colors.blue,
