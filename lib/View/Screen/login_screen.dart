@@ -114,7 +114,7 @@ class _LoginState extends State<Login> {
                       const Text("Chưa có tài khoản?"),
                       InkWell(
                         onTap: () {
-                          // Điều hướng đến trang đăng ký
+                          Navigator.pushNamed(context, RouteName.register);
                         },
                         highlightColor: Colors.blue.withOpacity(0.1),
                         child: Container(

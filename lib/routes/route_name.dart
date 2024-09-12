@@ -9,4 +9,5 @@ class RouteName{
   static const String address="address_screen";
   static const String newaddress="new_address_screen";
   static const String cart="cart_screen";
+  static const String register="register_screen";
 }

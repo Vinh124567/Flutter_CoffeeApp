@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import '../Model/address_dto.dart';
 import '../Model/coffee_dto.dart';
 import '../Model/voucher_dto.dart';
+import '../View/Screen/RegisterScreen.dart';
 import '../View/Screen/address_page.dart';
 import '../View/Screen/login_screen.dart';
 import '../View/Screen/order_screen.dart';
@@ -18,6 +19,8 @@ class Routes {
     switch (setting.name) {
       case RouteName.login:
         return MaterialPageRoute(builder: (BuildContext context) => const Login());
+      case RouteName.register:
+        return MaterialPageRoute(builder: (BuildContext context) => const Register());
       case RouteName.home:
         return MaterialPageRoute(builder: (BuildContext context) => const DashboardPage());
       case RouteName.cart:
