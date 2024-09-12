@@ -50,7 +50,7 @@ class OrderTabScreen extends StatelessWidget {
         body: TabBarView(
           children: [
             Center(child: Deliver(coffees: coffees)),
-            Center(child: Text('Pick Up Tab Content')),
+            const Center(child: Text('Pick Up Tab Content')),
           ],
         ),
       ),

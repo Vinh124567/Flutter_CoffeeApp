@@ -7,8 +7,7 @@ import '../../ViewModel/voucher_view_model.dart';
 class VoucherScreen extends StatefulWidget {
   final List<Voucher> selectedVouchers;
 
-  const VoucherScreen({Key? key, required this.selectedVouchers})
-      : super(key: key);
+  const VoucherScreen({super.key, required this.selectedVouchers});
 
   @override
   _VoucherScreenState createState() => _VoucherScreenState();
@@ -33,7 +32,7 @@ class _VoucherScreenState extends State<VoucherScreen> {
       appBar: AppBar(
         title: const Text("Select Vouchers"),
         leading: IconButton(
-          onPressed: () => Navigator.pop(context, selectedVouchers),
+          onPressed: () => Navigator.pop(context,selectedVouchers),
           icon: const ImageIcon(
             AssetImage('assets/images/ic_arrow_left.png'),
           ),
@@ -69,8 +68,8 @@ class _VoucherScreenState extends State<VoucherScreen> {
                       ],
                     ),
                     trailing: isSelected
-                        ? Icon(Icons.check_box, color: Colors.green)
-                        : Icon(Icons.check_box_outline_blank),
+                        ? const Icon(Icons.check_box, color: Colors.green)
+                        : const Icon(Icons.check_box_outline_blank),
                     onTap: () {
                       setState(() {
                         if (isSelected) {

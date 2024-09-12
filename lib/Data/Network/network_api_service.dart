@@ -11,7 +11,7 @@ class NetworkApiService extends BaseApiService {
   Future getGetApiResponse(String url) async{
     dynamic responseJson;
     try{
-      final response = await get(Uri.parse(url)).timeout(Duration(seconds: 10));
+      final response = await get(Uri.parse(url)).timeout(const Duration(seconds: 10));
       responseJson= returnResponse(response);
     }on SocketException {
       throw FetchDataException('No Internet Connect');
@@ -28,7 +28,7 @@ class NetworkApiService extends BaseApiService {
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(data), // Truyền data đã là Map<String, dynamic> rồi
-      ).timeout(Duration(seconds: 10));
+      ).timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection');
@@ -48,8 +48,7 @@ class NetworkApiService extends BaseApiService {
       case 405:
         throw BadRequestException(response.body.toString());
       default:
-        throw FetchDataException('Error accured while communicating with server '
-            +'with status code '+response.statusCode.toString());
+        throw FetchDataException('Error accured while communicating with server with status code ${response.statusCode}');
     }
   }
 

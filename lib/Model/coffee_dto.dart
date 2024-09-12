@@ -9,7 +9,6 @@ class CoffeeList {
     return CoffeeList(
       status: json['status'],
       message: json['message'],
-      // Sửa `Data` thành `Coffee` và chuyển đổi JSON thành danh sách đối tượng `Coffee`
       data: json['data'] != null
           ? (json['data'] as List).map((i) => Coffee.fromJson(i)).toList()
           : null,
@@ -18,8 +17,8 @@ class CoffeeList {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    data['status'] = this.status;
-    data['message'] = this.message;
+    data['status'] = status;
+    data['message'] = message;
     if (this.data != null) {
       // Sửa `Data` thành `Coffee` trong `toJson`
       data['data'] = this.data!.map((v) => v.toJson()).toList();
@@ -66,13 +65,13 @@ class Coffee {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['imgUrl'] = this.imgUrl;
-    data['price'] = this.price;
-    data['description'] = this.description;
-    data['ratingAverage'] = this.ratingAverage;
-    data['categoryName'] = this.categoryName;
+    data['id'] = id;
+    data['name'] = name;
+    data['imgUrl'] = imgUrl;
+    data['price'] = price;
+    data['description'] = description;
+    data['ratingAverage'] = ratingAverage;
+    data['categoryName'] = categoryName;
     return data;
   }
 

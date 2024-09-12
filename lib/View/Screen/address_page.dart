@@ -9,7 +9,7 @@ import '../../routes/route_name.dart';
 class AddressPage extends StatefulWidget {
   final Address? selectedAddress;
 
-  const AddressPage({Key? key, this.selectedAddress}) : super(key: key);
+  const AddressPage({super.key, this.selectedAddress});
 
   @override
   _AddressPageState createState() => _AddressPageState();
@@ -216,8 +216,8 @@ class _AddressPageState extends State<AddressPage> {
                 .fetchAddressListApi();
           }
         },
-        child: const Icon(Icons.add),
         backgroundColor: Colors.blue,
+        child: const Icon(Icons.add),
       ),
     );
   }

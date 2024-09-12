@@ -12,7 +12,7 @@ class AddressRepository {
       AddressDTO addressList = AddressDTO.fromJson(jsonResponse);
       return addressList;
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -26,7 +26,7 @@ class AddressRepository {
       return Address.fromJson(jsonResponse);
     } catch (e) {
       print("Error creating address: ${e.toString()}");
-      throw e;
+      rethrow;
     }
   }
 

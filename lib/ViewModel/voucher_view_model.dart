@@ -16,10 +16,9 @@ class VoucherViewModel with ChangeNotifier {
 
   Future<void> fetchVoucherListApi() async {
     setVoucherList(ApiResponse.loading());
-    _myRepo.fetchVoucherList().then((value) {
+    _myRepo.fetchVoucherList("1").then((value) {
       setVoucherList(ApiResponse.completed(value));
     }).onError((error, stackTrace) {
-      // In ra lỗi và stack trace khi xảy ra lỗi
       print('Error occurred: $error');
       print('Stack trace: $stackTrace');
 

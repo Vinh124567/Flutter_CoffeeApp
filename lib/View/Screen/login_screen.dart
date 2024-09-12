@@ -44,13 +44,13 @@ class _LoginState extends State<Login> {
                     'assets/images/logo.png',
                     height: 150,
                   ),
-                  SizedBox(height: 50),
+                  const SizedBox(height: 50),
                   if (authViewModel.errorMessage != null)
                     Text(
                       authViewModel.errorMessage!,
-                      style: TextStyle(color: Colors.red),
+                      style: const TextStyle(color: Colors.red),
                     ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: _emailController,
                     decoration: InputDecoration(
@@ -58,7 +58,7 @@ class _LoginState extends State<Login> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      prefixIcon: Icon(Icons.email),
+                      prefixIcon: const Icon(Icons.email),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -67,7 +67,7 @@ class _LoginState extends State<Login> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   TextFormField(
                     controller: _passwordController,
                     decoration: InputDecoration(
@@ -75,7 +75,7 @@ class _LoginState extends State<Login> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      prefixIcon: Icon(Icons.lock),
+                      prefixIcon: const Icon(Icons.lock),
                     ),
                     obscureText: true,
                     validator: (value) {
@@ -85,7 +85,7 @@ class _LoginState extends State<Login> {
                       return null;
                     },
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: authViewModel.loading
                         ? null
@@ -97,28 +97,29 @@ class _LoginState extends State<Login> {
                         );
                       }
                     },
-                    child: authViewModel.loading
-                        ? CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    )
-                        : Text("Login", style: TextStyle(color: Colors.black)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.grey,
-                      minimumSize: Size(200, 50),
+                      minimumSize: const Size(200, 50),
                     ),
+                    child: authViewModel.loading
+                        ? const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    )
+                        : const Text("Login", style: TextStyle(color: Colors.black)),
                   ),
-                  SizedBox(height: 32),
+                  const SizedBox(height: 32),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Chưa có tài khoản?"),
+                      const Text("Chưa có tài khoản?"),
                       InkWell(
                         onTap: () {
                           // Điều hướng đến trang đăng ký
                         },
+                        highlightColor: Colors.blue.withOpacity(0.1),
                         child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 1),
-                          child: Center(
+                          padding: const EdgeInsets.symmetric(vertical: 1),
+                          child: const Center(
                             child: Text(
                               ' Đăng ký ngay',
                               style: TextStyle(
@@ -128,7 +129,6 @@ class _LoginState extends State<Login> {
                             ),
                           ),
                         ),
-                        highlightColor: Colors.blue.withOpacity(0.1),
                       ),
                     ],
                   )

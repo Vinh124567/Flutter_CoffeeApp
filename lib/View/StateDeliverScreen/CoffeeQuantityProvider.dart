@@ -3,7 +3,7 @@ import '../../../Model/coffee_dto.dart';
 
 class CoffeeQuantityProvider with ChangeNotifier {
   List<Coffee> _coffees = [];
-  Map<Coffee, int> _quantities = {};
+  final Map<Coffee, int> _quantities = {};
 
   // Define the initialize method
   void initialize(List<Coffee> coffees) {

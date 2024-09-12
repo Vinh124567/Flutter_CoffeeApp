@@ -10,15 +10,15 @@ class AddressDTO {
     if (json['data'] != null) {
       data = <Address>[];
       json['data'].forEach((v) {
-        data!.add(new Address.fromJson(v));
+        data!.add(Address.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    data['message'] = this.message;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['status'] = status;
+    data['message'] = message;
     if (this.data != null) {
       data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
@@ -44,12 +44,12 @@ class Address {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['address'] = this.address;
-    data['phone'] = this.phone;
-    data['name'] = this.name;
-    data['userId'] = this.userId;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['address'] = address;
+    data['phone'] = phone;
+    data['name'] = name;
+    data['userId'] = userId;
     return data;
   }
 }

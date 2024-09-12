@@ -6,7 +6,7 @@ import '../Res/app_url.dart';
 
 class HomeRepository{
 
-  BaseApiService _apiService= NetworkApiService();
+  final BaseApiService _apiService= NetworkApiService();
 
   Future<CoffeeList> fetchCoffeeList() async{
     try{
@@ -16,7 +16,7 @@ class HomeRepository{
       return coffeeList;
 
     }catch(e){
-      throw e;
+      rethrow;
     }
   }
 }

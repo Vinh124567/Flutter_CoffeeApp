@@ -1,8 +1,6 @@
 
 import 'package:coffee_shop/Model/coffee_dto.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -53,7 +51,7 @@ class _HomeFragmentState extends State<HomeFragment> {
         buildCategories(),
         const Gap(16),
         buildGridCoffee(),
-        Gap(30),
+        const Gap(30),
       ],
     );
   }

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:readmore/readmore.dart';
-
 import '../../Model/coffee_dto.dart';
 import '../../routes/route_name.dart';
 import '../Widget/button_primary.dart';
@@ -66,7 +65,9 @@ class _DetailPageState extends State<DetailPage> {
           ),
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, RouteName.cart);
+          },
           icon: const ImageIcon(
             AssetImage('assets/images/ic_heart_border.png'),
           ),
@@ -318,17 +319,29 @@ class _DetailPageState extends State<DetailPage> {
               ],
             ),
           ),
+          IconButton(
+            icon: Icon(Icons.add_shopping_cart, color: Color(0xffC67C4E), size: 30),
+            onPressed: () {
+              // Xử lý khi bấm vào biểu tượng thêm vào giỏ hàng
+              // Ví dụ: Thêm sản phẩm vào danh sách giỏ hàng hoặc hiển thị thông báo
+              print('Sản phẩm đã được thêm vào giỏ hàng');
+            },
+          ),
+          SizedBox(width: 10),
           SizedBox(
-            width: 217,
+            width: 127,
             child: ButtonPrimary(
               title: 'Buy Now',
               onTap: () {
-                Navigator.pushNamed(context, RouteName.order,arguments: selectedCoffees);
+                Navigator.pushNamed(context, RouteName.order, arguments: selectedCoffees);
               },
             ),
-          )
+          ),
+          // Thay đổi "Add to Cart" thành IconButton
+
         ],
       ),
+
     );
   }
 }

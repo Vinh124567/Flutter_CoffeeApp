@@ -1,4 +1,5 @@
 import 'package:coffee_shop/View/Screen/add_address_page.dart';
+import 'package:coffee_shop/View/Screen/cart_screen.dart';
 import 'package:coffee_shop/View/Screen/dashboard_page.dart';
 import 'package:coffee_shop/View/Screen/detail_screen.dart';
 import 'package:coffee_shop/View/Screen/onboard_page.dart';
@@ -19,6 +20,8 @@ class Routes {
         return MaterialPageRoute(builder: (BuildContext context) => const Login());
       case RouteName.home:
         return MaterialPageRoute(builder: (BuildContext context) => const DashboardPage());
+      case RouteName.cart:
+        return MaterialPageRoute(builder: (BuildContext context) =>  const CartPage());
       case RouteName.newaddress:
         return MaterialPageRoute(builder: (BuildContext context) => const AddAddressScreen());
       case RouteName.voucher:
@@ -50,7 +53,7 @@ class Routes {
 
       default:
         return MaterialPageRoute(builder: (_) {
-          return Scaffold(
+          return const Scaffold(
             body: Center(
               child: Text("No route defined"),
             ),
