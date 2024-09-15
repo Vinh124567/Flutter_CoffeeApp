@@ -1,4 +1,5 @@
 import 'package:coffee_shop/ViewModel/auth_view_model.dart';
+import 'package:coffee_shop/ViewModel/cartitem_view_model.dart';
 import 'package:coffee_shop/ViewModel/home_view_model.dart';
 import 'package:coffee_shop/routes/route_name.dart';
 import 'package:coffee_shop/routes/routes.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => HomeViewModel()),
         ChangeNotifierProvider(create: (_) => AddressViewModel()),
         ChangeNotifierProvider(create: (_) => CoffeeQuantityProvider()),
+        ChangeNotifierProvider(create: (_) => CartItemViewModel()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

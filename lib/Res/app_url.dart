@@ -12,6 +12,11 @@ class AppUrl{
   static String voucherUrl(String userId) {
     return '$baseUrl/vouchers/users/$userId/available';
   }
+
+  static String cartItemUrl(String userId) {
+    return '$baseUrl/cart/$userId/items';
+  }
+
   static String postAddressUrl() => '$baseUrl/users/post';
 
 }

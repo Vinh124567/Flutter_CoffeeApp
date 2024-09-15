@@ -34,32 +34,35 @@ class CoffeeList {
 class Coffee {
   int? id;
   String? name;
-  String? imgUrl;
+  String? imageUrl;
   double? price;
   String? description;
   double? ratingAverage;
   String? categoryName;
+  String? note;
 
   Coffee({
     this.id,
     this.name,
-    this.imgUrl,
+    this.imageUrl,
     this.price,
     this.description,
     this.ratingAverage,
     this.categoryName,
+    this.note
   });
 
-  // Sửa `Data.fromJson` thành `Coffee.fromJson` để khớp với tên lớp
+
   factory Coffee.fromJson(Map<String, dynamic> json) {
     return Coffee(
       id: json['id'],
       name: json['name'],
-      imgUrl: json['imgUrl'],
+      imageUrl: json['imageUrl'],
       price: json['price'],
       description: json['description'],
       ratingAverage: json['ratingAverage'],
       categoryName: json['categoryName'],
+      note: json['note'],
     );
   }
 
@@ -67,16 +70,17 @@ class Coffee {
     final Map<String, dynamic> data = {};
     data['id'] = id;
     data['name'] = name;
-    data['imgUrl'] = imgUrl;
+    data['imageUrl'] = imageUrl;
     data['price'] = price;
     data['description'] = description;
     data['ratingAverage'] = ratingAverage;
     data['categoryName'] = categoryName;
+    data['note'] = note;
     return data;
   }
 
   @override
   String toString() {
-    return 'id: $id, name: $name, imgUrl: $imgUrl, price: $price, description: $description, ratingAverage: $ratingAverage, categoryName: $categoryName';
+    return 'id: $id, name: $name, imgUrl: $imageUrl, price: $price, description: $description, ratingAverage: $ratingAverage, categoryName: $categoryName';
   }
 }

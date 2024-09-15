@@ -80,7 +80,7 @@ class _DetailPageState extends State<DetailPage> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: Image.network(
-        widget.coffee.imgUrl.toString(),
+        widget.coffee.imageUrl.toString(),
         width: double.infinity,
         height: 202,
         fit: BoxFit.cover,

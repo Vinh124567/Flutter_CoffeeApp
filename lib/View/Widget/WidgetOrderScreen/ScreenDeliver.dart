@@ -144,7 +144,7 @@ class _DeliverState extends State<Deliver> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Image.network(
-                            coffee.imgUrl.toString(),
+                            coffee.imageUrl.toString(),
                             width: 50,
                             height: 50,
                             fit: BoxFit.cover,
@@ -359,23 +359,6 @@ class _DeliverState extends State<Deliver> {
     );
   }
 
-  // double getTotalPrice() {
-  //   return widget.coffees.fold(0, (sum, coffee) {
-  //     final quantity =
-  //         Provider.of<CoffeeQuantityProvider>(context).getQuantity(coffee);
-  //     return sum + (coffee.price ?? 0) * quantity;
-  //   });
-  // }
-  //
-  // double calculateTotalPrice() {
-  //   // Calculate total price after applying discounts and vouchers
-  //   // This is just an example calculation
-  //   double totalPrice = getTotalPrice();
-  //   double discount = selectedVouchers.fold(0, (sum, voucher) {
-  //     return sum + (voucher.discount ?? 0);
-  //   });
-  //   return totalPrice - discount;
-  // }
 
   double getTotalPrice(CoffeeQuantityProvider coffeeQuantityProvider) {
     return widget.coffees.fold(0, (sum, coffee) {
@@ -397,35 +380,4 @@ class _DeliverState extends State<Deliver> {
 
     return discountedPrice;
   }
-
-
-
-// double calculateTotalPrice(CoffeeQuantityProvider coffeeQuantityProvider) {
-  //   double totalPrice = getTotalPrice(coffeeQuantityProvider);
-  //
-  //   // Kiểm tra các voucher có hợp lệ không trước khi áp dụng giảm giá
-  //   double discount = selectedVouchers.fold(0, (sum, voucher) {
-  //     DateTime now = DateTime.now();
-  //
-  //     // Chuyển đổi validFrom và validUntil thành DateTime
-  //     DateTime? validFrom = voucher.validFrom != null
-  //         ? DateTime.parse(voucher.validFrom!)
-  //         : null;
-  //     DateTime? validUntil = voucher.validUntil != null
-  //         ? DateTime.parse(voucher.validUntil!)
-  //         : null;
-  //
-  //     // Kiểm tra xem voucher có trong thời gian hợp lệ hay không
-  //     if ((validFrom == null || validFrom.isBefore(now)) &&
-  //         (validUntil == null || validUntil.isAfter(now))) {
-  //       return sum + (voucher.discount ?? 0);
-  //     }
-  //
-  //     return sum;
-  //   });
-  //
-  //   return totalPrice - discount;
-  // }
-
-
 }

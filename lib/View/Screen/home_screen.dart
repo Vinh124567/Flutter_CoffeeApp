@@ -16,7 +16,7 @@ class HomeFragment extends StatefulWidget {
 
 class _HomeFragmentState extends State<HomeFragment> {
   String categorySelected = 'All Coffee';
-    @override
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -266,7 +266,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(12),
                           child: Image.network(
-                            coffee.imgUrl.toString(),
+                            coffee.imageUrl.toString(),
                             height: 128,
                             width: double.infinity,
                             fit: BoxFit.cover,
