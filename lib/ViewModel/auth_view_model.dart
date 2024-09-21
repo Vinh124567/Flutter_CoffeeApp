@@ -25,6 +25,15 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Kiểm tra trạng thái đăng nhập
+  // Kiểm tra trạng thái đăng nhập
+  Future<void> checkLoginStatus() async {
+    setLoading(true);
+    _user = FirebaseAuth.instance.currentUser;
+    setLoading(false);
+    notifyListeners();
+  }
+
   // Đăng nhập
   Future<void> signIn(String email, String password) async {
     setLoading(true);
@@ -60,8 +69,6 @@ class AuthViewModel extends ChangeNotifier {
       notifyListeners(); // Cập nhật giao diện người dùng
     }
   }
-
-
 
   // Đăng xuất
   Future<void> signOut() async {

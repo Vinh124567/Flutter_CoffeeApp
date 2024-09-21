@@ -1,10 +1,15 @@
 
 
+import 'package:coffee_shop/ViewModel/cartitem_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
+import '../../Data/Response/status.dart';
+import '../../Model/cart_item_request.dart';
 import '../../Model/coffee_dto.dart';
+import '../../ViewModel/auth_view_model.dart';
 import '../../routes/route_name.dart';
 import '../Widget/button_primary.dart';
 
@@ -22,8 +27,11 @@ class _DetailPageState extends State<DetailPage> {
   String sizeSelected = 'M';
 
 
+
   @override
   Widget build(BuildContext context) {
+    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+    final cartItemViewModel=Provider.of<CartItemViewModel>(context, listen: false);
     return Scaffold(
       body: ListView(
         physics: const BouncingScrollPhysics(),
@@ -42,7 +50,7 @@ class _DetailPageState extends State<DetailPage> {
           const Gap(24),
         ],
       ),
-      bottomNavigationBar: buildPrice(),
+      bottomNavigationBar: buildPrice(authViewModel,cartItemViewModel),
     );
   }
 
@@ -275,8 +283,9 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  Widget buildPrice() {
+  Widget buildPrice(AuthViewModel authViewModel,CartItemViewModel cartItemViewModel) {
     List<Coffee> selectedCoffees = [];
+    widget.coffee.size = sizeSelected;
     selectedCoffees.add(widget.coffee);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -322,11 +331,30 @@ class _DetailPageState extends State<DetailPage> {
           IconButton(
             icon: Icon(Icons.add_shopping_cart, color: Color(0xffC67C4E), size: 30),
             onPressed: () {
-              // Xử lý khi bấm vào biểu tượng thêm vào giỏ hàng
-              // Ví dụ: Thêm sản phẩm vào danh sách giỏ hàng hoặc hiển thị thông báo
-              print('Sản phẩm đã được thêm vào giỏ hàng');
+              final cartItemRequest = CartItemRequest(
+                coffeeId: widget.coffee.id,
+                userId: authViewModel.user?.uid ?? '',
+                size: sizeSelected,
+              );
+
+              // Call the API method
+              cartItemViewModel.addItemToCartApi(cartItemRequest).then((response) {
+                // Check the status of the response
+                if (response.status == Status.COMPLETED) {
+                  print(response.data.toString());
+                  Navigator.pop(context, true); // Notify that item was added successfully
+                } else {
+                  // Handle failure case
+                  print('Failed to add item to cart: ${response.message}');
+                }
+              }).catchError((error) {
+                // Handle error
+                print('Error adding item to cart: $error');
+              });
             },
           ),
+
+
           SizedBox(width: 10),
           SizedBox(
             width: 127,
@@ -337,11 +365,8 @@ class _DetailPageState extends State<DetailPage> {
               },
             ),
           ),
-          // Thay đổi "Add to Cart" thành IconButton
-
         ],
       ),
-
     );
   }
 }

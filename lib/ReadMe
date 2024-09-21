@@ -427,3 +427,77 @@ return Column(
                   ),
                 ],
               );
+
+
+
+
+
+              onTap: () async{
+                                      await showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          String coffeeInfo = widget.coffees.map((coffee) {
+                                            return '${coffee.name} - ${coffee.size}';
+                                          }).join('\n');
+
+                                          return AlertDialog(
+                                            backgroundColor: Colors.white,
+                                            title: const Text(
+                                              'Thêm Ghi Chú',
+                                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                            ),
+                                            content: SingleChildScrollView( // Thêm SingleChildScrollView
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min, // Đảm bảo chiều cao tự động
+                                                children: [
+                                                  TextField(
+                                                    readOnly: true,
+                                                    maxLines: 3,
+                                                    decoration: InputDecoration(
+                                                      labelText: 'Cà phê và Kích cỡ',
+                                                      border: OutlineInputBorder(),
+                                                      focusedBorder: OutlineInputBorder(
+                                                        borderSide: BorderSide(color: Color(0xffC67C4E)),
+                                                      ),
+                                                      hintText: coffeeInfo.isNotEmpty ? coffeeInfo : 'Không có cà phê',
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 10),
+                                                  TextField(
+                                                    controller: _noteController,
+                                                    maxLines: 3,
+                                                    decoration: const InputDecoration(
+                                                      labelText: 'Ghi chú thêm',
+                                                      border: OutlineInputBorder(),
+                                                      focusedBorder: OutlineInputBorder(
+                                                        borderSide: BorderSide(color: Color(0xffC67C4E)),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: const Text(
+                                                  'Hủy',
+                                                  style: TextStyle(color: Colors.red),
+                                                ),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    note = _noteController.text;
+                                                    Navigator.of(context).pop();
+                                                  });
+                                                },
+                                                child: const Text('Lưu'),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },

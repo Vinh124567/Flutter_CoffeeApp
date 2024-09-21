@@ -16,7 +16,13 @@ class AppUrl{
   static String cartItemUrl(String userId) {
     return '$baseUrl/cart/$userId/items';
   }
+  static String deleteCartItemUrl(int cartItemId) {
+    return '$baseUrl/cart/items/$cartItemId'; // Đường dẫn đầy đủ đến API xóa mục
+  }
 
   static String postAddressUrl() => '$baseUrl/users/post';
+  static String addItemCartUrl() => '$baseUrl/cart/add/itemcart';
+
+  static String createOrderUrl() => '$baseUrl/orders/create';
 
 }

@@ -39,7 +39,8 @@ class Coffee {
   String? description;
   double? ratingAverage;
   String? categoryName;
-  String? note;
+  int? cartItemId;
+  String? size;
 
   Coffee({
     this.id,
@@ -49,7 +50,8 @@ class Coffee {
     this.description,
     this.ratingAverage,
     this.categoryName,
-    this.note
+    this.cartItemId,
+    this.size
   });
 
 
@@ -62,7 +64,8 @@ class Coffee {
       description: json['description'],
       ratingAverage: json['ratingAverage'],
       categoryName: json['categoryName'],
-      note: json['note'],
+      cartItemId: json['cartItemId'],
+            size: json['size']
     );
   }
 
@@ -75,7 +78,6 @@ class Coffee {
     data['description'] = description;
     data['ratingAverage'] = ratingAverage;
     data['categoryName'] = categoryName;
-    data['note'] = note;
     return data;
   }
 
@@ -84,3 +86,4 @@ class Coffee {
     return 'id: $id, name: $name, imgUrl: $imageUrl, price: $price, description: $description, ratingAverage: $ratingAverage, categoryName: $categoryName';
   }
 }
+

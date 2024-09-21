@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../Model/coffee_dto.dart';
+import '../../../Model/order_dto.dart';
 import '../../../Model/voucher_dto.dart';
 import '../../../Model/address_dto.dart';
+import '../../../ViewModel/auth_view_model.dart';
 import '../../../routes/route_name.dart';
 import '../../StateDeliverScreen/CoffeeQuantityProvider.dart';
 
@@ -18,22 +20,48 @@ class Deliver extends StatefulWidget {
 }
 
 class _DeliverState extends State<Deliver> {
+  OrderDTO? orderDTO;
   List<Voucher> selectedVouchers = []; // Danh sách voucher đã chọn
   Address? _selectedAddress; // Địa chỉ đã chọn từ màn hình Address
+  String note = ''; // Biến lưu trữ ghi chú
+  List<OrderItem> orderItems = [];
+  List<String> voucherCode = [];
+  final TextEditingController _noteController = TextEditingController();
+
+  void createOrderItems(CoffeeQuantityProvider coffeeQuantityProvider) {
+    orderItems = widget.coffees.map((coffee) {
+      final quantity = coffeeQuantityProvider.getQuantity(coffee);
+
+      // Tạo đối tượng OrderItem với id và quantity
+      return OrderItem(
+        quantity: quantity, // Gán id của cà phê
+        coffeeId: coffee.id??0, // Gán số lượng// Gán giá tiền từ coffee object (nếu có)
+      );
+    }).toList();
+  }
+
+
 
   @override
   void initState() {
     super.initState();
     // Initialize provider with coffee list
+    // Khởi tạo note với thông tin của cà phê
+    String initialNote = widget.coffees.map((coffee) {
+      return '${coffee.name} - ${coffee.size}';
+    }).join('\n');
+    note = initialNote;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<CoffeeQuantityProvider>(context, listen: false)
         .initialize(widget.coffees);
     });
   }
 
+
+
   @override
   Widget build(BuildContext context) {
-    print("buil");
+    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -100,8 +128,75 @@ class _DeliverState extends State<Deliver> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: InkWell(
-                      onTap: () {
-                        print('New address button pressed');
+                      onTap: () async {
+                        await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            // Gán thông tin cà phê mặc định nếu note chưa có nội dung
+                            String initialText = widget.coffees.map((coffee) {
+                              return '${coffee.name} - ${coffee.size}';
+                            }).join('\n');
+
+                            // Nếu note đã có nội dung, hiển thị lại nội dung này
+                            _noteController.text = note.isNotEmpty ? note : initialText;
+
+                            return AlertDialog(
+                              backgroundColor: Colors.white,
+                              title: const Text(
+                                'Thêm Ghi Chú',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              content: SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      TextField(
+                                        controller: _noteController,
+                                        maxLines: 6,
+                                        decoration: InputDecoration(
+                                          labelText: 'Cà phê và Ghi chú',
+                                          labelStyle: const TextStyle(fontSize: 14),
+                                          contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                            borderSide: const BorderSide(width: 0.5),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: const BorderSide(color: Color(0xffC67C4E), width: 0.5),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text(
+                                    'Hủy',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      // Lưu lại nội dung của TextField vào biến note
+                                      note = _noteController.text;
+                                      Navigator.of(context).pop();
+                                    });
+                                  },
+                                  child: const Text('Lưu'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+
                       },
                       child: Container(
                         height: 25,
@@ -206,6 +301,7 @@ class _DeliverState extends State<Deliver> {
                   if (result != null) {
                     setState(() {
                       selectedVouchers = result;
+                      voucherCode = result.map((voucher) => voucher.code).whereType<String>().toList();
                     });
                   }
                 },
@@ -313,14 +409,15 @@ class _DeliverState extends State<Deliver> {
           ),
         ),
       ),
-      bottomNavigationBar: buildPrice(),
+      bottomNavigationBar: buildPrice(authViewModel),
     );
   }
 
-  Widget buildPrice() {
+  Widget buildPrice(AuthViewModel authViewModel) {
+    double totalPrice = 0.0;
     return Container(
       height: 60,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -335,25 +432,70 @@ class _DeliverState extends State<Deliver> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            "Total",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          Consumer<CoffeeQuantityProvider>(
-              builder: (context, coffeeQuantityProvider, child) {
-            return Text(
-              NumberFormat.currency(
-                decimalDigits: 2,
-                locale: 'en_US',
-                symbol: '\$ ',
-              ).format(calculateTotalPrice(coffeeQuantityProvider)),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xffC67C4E),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "Total",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-            );
-          }),
+              Consumer<CoffeeQuantityProvider>(
+                builder: (context, coffeeQuantityProvider, child) {
+                  totalPrice = calculateTotalPrice(coffeeQuantityProvider);
+                  return Text(
+                    NumberFormat.currency(
+                      decimalDigits: 2,
+                      locale: 'en_US',
+                      symbol: '\$ ',
+                    ).format(calculateTotalPrice(coffeeQuantityProvider)),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xffC67C4E),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+          ElevatedButton(
+            onPressed: () {
+              String userId = authViewModel.user?.uid ?? "defaultUserId"; // Gán giá trị mặc định nếu userId là null
+              int addressId = _selectedAddress?.id ?? 0; // Gán 0 nếu addressId là null
+              final coffeeQuantityProvider = Provider.of<CoffeeQuantityProvider>(context, listen: false);
+              createOrderItems(coffeeQuantityProvider);
+
+              // Tạo OrderDTO
+              orderDTO = OrderDTO(
+                userId: userId,
+                totalPrice: totalPrice,
+                notes: note,
+                status: OrderStatus.PENDING,
+                orderItems: orderItems,
+                voucherCodes: voucherCode,
+                addressId: addressId,
+              );
+
+              print(orderDTO);
+            },
+
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xffC67C4E), // Màu của nút
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20), // Tạo bo tròn cho nút
+              ),
+            ),
+            child: const Text(
+              'Payment',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
         ],
       ),
     );
