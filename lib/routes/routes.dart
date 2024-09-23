@@ -3,6 +3,7 @@ import 'package:coffee_shop/View/Screen/cart_screen.dart';
 import 'package:coffee_shop/View/Screen/dashboard_page.dart';
 import 'package:coffee_shop/View/Screen/detail_screen.dart';
 import 'package:coffee_shop/View/Screen/onboard_page.dart';
+import 'package:coffee_shop/View/Screen/payment_method_screen.dart';
 import 'package:coffee_shop/routes/route_name.dart';
 import 'package:flutter/material.dart';
 import '../Model/address_dto.dart';
@@ -27,6 +28,8 @@ class Routes {
         return MaterialPageRoute(builder: (BuildContext context) =>  const CartPage());
       case RouteName.newaddress:
         return MaterialPageRoute(builder: (BuildContext context) => const AddAddressScreen());
+      case RouteName.payment:
+        return MaterialPageRoute(builder: (BuildContext context) => PaymentMethodScreen());
       case RouteName.voucher:
         final List<Voucher> selectedVouchers = setting.arguments as List<Voucher>;
         return MaterialPageRoute(

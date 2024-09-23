@@ -7,6 +7,7 @@ import '../../../Model/order_dto.dart';
 import '../../../Model/voucher_dto.dart';
 import '../../../Model/address_dto.dart';
 import '../../../ViewModel/auth_view_model.dart';
+import '../../../ViewModel/payment_view_model.dart';
 import '../../../routes/route_name.dart';
 import '../../StateDeliverScreen/CoffeeQuantityProvider.dart';
 
@@ -40,13 +41,9 @@ class _DeliverState extends State<Deliver> {
     }).toList();
   }
 
-
-
   @override
   void initState() {
     super.initState();
-    // Initialize provider with coffee list
-    // Khởi tạo note với thông tin của cà phê
     String initialNote = widget.coffees.map((coffee) {
       return '${coffee.name} - ${coffee.size}';
     }).join('\n');
@@ -57,11 +54,10 @@ class _DeliverState extends State<Deliver> {
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+    final paymentViewModel = Provider.of<PaymentViewModel>(context, listen: false);
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -198,6 +194,8 @@ class _DeliverState extends State<Deliver> {
                         );
 
                       },
+
+
                       child: Container(
                         height: 25,
                         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -334,30 +332,41 @@ class _DeliverState extends State<Deliver> {
                 ),
               ),
               const SizedBox(height: 10),
-              Container(
-                height: 60,
-                padding: const EdgeInsets.only(left: 20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.grey.shade100,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(Icons.payment, size: 20),
-                    Text("Payment method"),
-                    Icon(Icons.arrow_forward_ios),
-                  ],
+              InkWell(
+                onTap: () async {
+                  paymentViewModel.selectAndProcessPaymentMethod(context);  // Gọi hàm chọn và xử lý phương thức thanh toán
+                },
+                child: Container(
+                  height: 60,
+                  padding: const EdgeInsets.only(left: 20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.grey.shade100,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Icon(Icons.payment, size: 20),
+                      // Sử dụng Consumer để cập nhật phương thức thanh toán
+                      Consumer<PaymentViewModel>(
+                        builder: (context, paymentViewModel, child) {
+                          return Text(paymentViewModel.paymentMethod);  // Hiển thị phương thức thanh toán đã chọn
+                        },
+                      ),
+                      const Icon(Icons.arrow_forward_ios),
+                    ],
+                  ),
                 ),
               ),
+
               const SizedBox(height: 20),
               const Text("Payment Summary", style: TextStyle(fontSize: 20)),
               const SizedBox(height: 20),
@@ -500,6 +509,7 @@ class _DeliverState extends State<Deliver> {
       ),
     );
   }
+
 
 
   double getTotalPrice(CoffeeQuantityProvider coffeeQuantityProvider) {
