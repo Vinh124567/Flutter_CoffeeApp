@@ -52,4 +52,9 @@ class Address {
     data['userId'] = userId;
     return data;
   }
+
+  @override
+  String toString() {
+    return 'Address{id: $id, address: $address, phone: $phone, name: $name, userId: $userId}';
+  }
 }

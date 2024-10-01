@@ -6,17 +6,6 @@ import '../Res/app_url.dart';
 class VoucherRepository{
 
   final BaseApiService _apiService= NetworkApiService();
-
-  // Future<VoucherList> fetchVoucherList() async{
-  //   try{
-  //     dynamic jsonResponse = await _apiService.getGetApiResponse(AppUrl.getVoucherUrl);
-  //     VoucherList voucherList = VoucherList.fromJson(jsonResponse);
-  //     return voucherList;
-  //   }catch(e){
-  //     throw e;
-  //   }
-  // }
-
   Future<VoucherList> fetchVoucherList(String userId) async{
     try{
       dynamic jsonResponse = await _apiService.getGetApiResponse(AppUrl.voucherUrl(userId));

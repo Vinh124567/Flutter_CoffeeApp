@@ -1,5 +1,4 @@
 import 'package:coffee_shop/Model/order_dto.dart';
-
 import 'package:coffee_shop/Repository/order_repository.dart';
 import 'package:flutter/cupertino.dart';
 import '../Data/Response/api_response.dart';
@@ -9,27 +8,22 @@ class OrderViewModel with ChangeNotifier {
 
   ApiResponse<String> addItemResponse = ApiResponse.loading();
 
-  setNewOrderResponse(ApiResponse<String> response) {
+  // Hàm cập nhật phản hồi đơn hàng
+  void setNewOrderResponse(ApiResponse<String> response) {
     addItemResponse = response;
     notifyListeners();
   }
 
+  // Hàm gọi API để tạo đơn hàng mới
   Future<ApiResponse<String>> newOrderApi(OrderDTO orderDTO) async {
-    setNewOrderResponse(ApiResponse.loading());
+    setNewOrderResponse(ApiResponse.loading()); // Đặt trạng thái là loading
     try {
-      final jsonResponse = await _myRepo.newOrder(orderDTO);
-      final status = jsonResponse['status'];
-      final message = jsonResponse['message'];
-
-      if (status == 200) {
-        return ApiResponse.completed(message); // Thành công
-      } else {
-        return ApiResponse.error(message); // Thất bại
-      }
+      await _myRepo.newOrder(orderDTO); // Gọi hàm từ repository
+      setNewOrderResponse(ApiResponse.completed("Success")); // Cập nhật thành công
+      return ApiResponse.completed("Success"); // Trả về thành công
     } catch (error, stackTrace) {
-      print('Lỗi khi thêm item vào giỏ hàng: $error');
-      print('Stacktrace: $stackTrace');
-      return ApiResponse.error(error.toString());
+      setNewOrderResponse(ApiResponse.error(error.toString())); // Cập nhật lỗi
+      return ApiResponse.error(error.toString()); // Trả về lỗi
     }
   }
 }

@@ -15,7 +15,7 @@ class AddAddressScreen extends StatefulWidget {
 class _AddAddressScreenState extends State<AddAddressScreen> {
   final _addressController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _nameController = TextEditingController(); // Thêm trường 'name'
+  final _nameController = TextEditingController(); 
 
   @override
   Widget build(BuildContext context) {
@@ -56,12 +56,10 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                     viewModel.addAddressApi(
                       address, // Truyền dữ liệu Address vào data
                     ).then((_) {
-                      // Khi API gọi xong và có trạng thái `COMPLETED`, quay lại màn hình trước đó
                       if (viewModel.createAddressResponse.status == Status.COMPLETED) {
                         Navigator.pop(context, true); // Truyền dữ liệu `true` để thông báo rằng đã thêm địa chỉ thành công
                       }
                     }).catchError((error) {
-                      // Xử lý lỗi nếu cần thiết
                       print('Error adding address: $error');
                     });
                   },

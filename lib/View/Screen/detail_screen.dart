@@ -1,5 +1,4 @@
 
-
 import 'package:coffee_shop/ViewModel/cartitem_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -7,24 +6,23 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 import '../../Data/Response/status.dart';
-import '../../Model/cart_item_request.dart';
-import '../../Model/coffee_dto.dart';
+import '../../Model/Cart/cart_response.dart';
+import '../../Model/Coffees/coffee_response.dart';
+import '../../Utils/utils.dart';
 import '../../ViewModel/auth_view_model.dart';
 import '../../routes/route_name.dart';
 import '../Widget/button_primary.dart';
 
 class DetailPage extends StatefulWidget {
   const DetailPage({super.key, required this.coffee});
-  final Coffee coffee;
-
-
-
+  final CoffeeData coffee;
   @override
   State<DetailPage> createState() => _DetailPageState();
 }
 
 class _DetailPageState extends State<DetailPage> {
   String sizeSelected = 'M';
+  int quantity = 1;
 
 
 
@@ -88,7 +86,7 @@ class _DetailPageState extends State<DetailPage> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: Image.network(
-        widget.coffee.imageUrl.toString(),
+        widget.coffee.coffeeImageUrl.toString(),
         width: double.infinity,
         height: 202,
         fit: BoxFit.cover,
@@ -101,7 +99,7 @@ class _DetailPageState extends State<DetailPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          widget.coffee.name.toString(),
+          widget.coffee.coffeeName.toString(),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
@@ -119,7 +117,7 @@ class _DetailPageState extends State<DetailPage> {
               children: [
                 const Gap(4),
                 Text(
-                  widget.coffee.categoryName.toString(),
+                  widget.coffee.category.toString(),
                   style: const TextStyle(
                     fontWeight: FontWeight.normal,
                     fontSize: 12,
@@ -136,7 +134,7 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                     const Gap(4),
                     Text(
-                      '${widget.coffee.ratingAverage} ',
+                      '${widget.coffee.averageRating} ',
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
@@ -144,7 +142,7 @@ class _DetailPageState extends State<DetailPage> {
                       ),
                     ),
                     Text(
-                      '(${widget.coffee.ratingAverage})',
+                      '(${widget.coffee.averageRating})',
                       style: const TextStyle(
                         fontWeight: FontWeight.normal,
                         fontSize: 12,
@@ -206,7 +204,7 @@ class _DetailPageState extends State<DetailPage> {
         ),
         const Gap(8),
         ReadMoreText(
-          widget.coffee.description.toString(),
+          widget.coffee.coffeeDescription.toString(),
           trimLength: 110,
           trimMode: TrimMode.Length,
           trimCollapsedText: ' Read More',
@@ -284,9 +282,6 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   Widget buildPrice(AuthViewModel authViewModel,CartItemViewModel cartItemViewModel) {
-    List<Coffee> selectedCoffees = [];
-    widget.coffee.size = sizeSelected;
-    selectedCoffees.add(widget.coffee);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       decoration: const BoxDecoration(
@@ -318,7 +313,7 @@ class _DetailPageState extends State<DetailPage> {
                     decimalDigits: 2,
                     locale: 'en_US',
                     symbol: '\$ ',
-                  ).format(widget.coffee.price),
+                  ).format(widget.coffee.coffeePrice),
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 18,
@@ -331,21 +326,17 @@ class _DetailPageState extends State<DetailPage> {
           IconButton(
             icon: Icon(Icons.add_shopping_cart, color: Color(0xffC67C4E), size: 30),
             onPressed: () {
-              final cartItemRequest = CartItemRequest(
-                coffeeId: widget.coffee.id,
-                userId: authViewModel.user?.uid ?? '',
+              final cartItemRequest = CartItemData(
+                coffeeData: widget.coffee,
+                quantity: quantity,
                 size: sizeSelected,
               );
-
-              // Call the API method
               cartItemViewModel.addItemToCartApi(cartItemRequest).then((response) {
-                // Check the status of the response
                 if (response.status == Status.COMPLETED) {
-                  print(response.data.toString());
-                  Navigator.pop(context, true); // Notify that item was added successfully
+                  Utils.toastMessage(response.data.toString());
                 } else {
                   // Handle failure case
-                  print('Failed to add item to cart: ${response.message}');
+                  Utils.flushBarErrorMessage('Failed to add item to cart: ${response.message}',context);
                 }
               }).catchError((error) {
                 // Handle error
@@ -353,15 +344,18 @@ class _DetailPageState extends State<DetailPage> {
               });
             },
           ),
-
-
           SizedBox(width: 10),
           SizedBox(
             width: 127,
             child: ButtonPrimary(
               title: 'Buy Now',
               onTap: () {
-                Navigator.pushNamed(context, RouteName.order, arguments: selectedCoffees);
+                final cartItem = CartItemData(
+                  coffeeData: widget.coffee,
+                  size: sizeSelected,
+                  quantity: quantity
+                );
+                Navigator.pushNamed(context, RouteName.order, arguments: [cartItem]);
               },
             ),
           ),

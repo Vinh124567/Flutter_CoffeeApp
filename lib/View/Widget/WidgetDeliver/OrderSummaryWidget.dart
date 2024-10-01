@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../../../Model/coffee_dto.dart';
+import '../../../Model/Coffees/coffee_response.dart';
 import '../../../Model/voucher_dto.dart';
 import '../../StateDeliverScreen/CoffeeQuantityProvider.dart';
 
 class OrderSummaryWidget extends StatelessWidget {
-  final List<Coffee> coffees;
+  final List<CoffeeData> coffees;
   final List<Voucher> selectedVouchers;
 
   const OrderSummaryWidget({
@@ -67,7 +67,7 @@ class OrderSummaryWidget extends StatelessWidget {
   double getTotalPrice(CoffeeQuantityProvider coffeeQuantityProvider) {
     return coffees.fold(0, (sum, coffee) {
       final quantity = coffeeQuantityProvider.getQuantity(coffee);
-      return sum + (coffee.price ?? 0) * quantity;
+      return sum + (coffee.coffeePrice ?? 0) * quantity;
     });
   }
 

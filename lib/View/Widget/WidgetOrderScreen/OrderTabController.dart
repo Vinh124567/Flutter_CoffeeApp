@@ -1,12 +1,13 @@
+import 'package:coffee_shop/Model/Cart/cart_response.dart';
 import 'package:flutter/material.dart';
-import '../../../Model/coffee_dto.dart';
+import '../../../Model/Coffees/coffee_response.dart';
 import 'ScreenDeliver.dart';
 import 'TabItem.dart';
 
 class OrderTabScreen extends StatelessWidget {
-  final List<Coffee> coffees;
+  final List<CartItemData> items;
 
-  const OrderTabScreen({super.key, required this.coffees});
+  const OrderTabScreen({super.key, required this.items});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +50,7 @@ class OrderTabScreen extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            Center(child: Deliver(coffees: coffees)),
+            Center(child: Deliver(items: items)),
             const Center(child: Text('Pick Up Tab Content')),
           ],
         ),

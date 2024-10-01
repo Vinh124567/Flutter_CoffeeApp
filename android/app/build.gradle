@@ -40,6 +40,10 @@ android {
         }
     }
 }
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:deprecation"
+}
+
 
 flutter {
     source = "../.."

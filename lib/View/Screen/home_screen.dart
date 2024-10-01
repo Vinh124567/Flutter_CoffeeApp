@@ -1,9 +1,11 @@
-
-import 'package:coffee_shop/Model/coffee_dto.dart';
+import 'package:coffee_shop/Model/category_dto.dart';
+import 'package:coffee_shop/Model/Coffees/coffee_response.dart';
+import 'package:coffee_shop/ViewModel/category_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../Data/Response/status.dart';
 import '../../ViewModel/home_view_model.dart';
 import '../../routes/route_name.dart';
 
@@ -16,13 +18,18 @@ class HomeFragment extends StatefulWidget {
 
 class _HomeFragmentState extends State<HomeFragment> {
   String categorySelected = 'All Coffee';
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Fetch Coffee List
       Provider.of<HomeViewModel>(context, listen: false).fetchCoffeeListApi();
+      // Fetch Categories List
+      Provider.of<CategoriesViewModel>(context, listen: false).fetchCategoriesListApi();
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -182,59 +189,77 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   Widget buildCategories() {
-    final categories = [
-      'All Coffee',
-      'Indonesiano',
-      'Machiato',
-      'Latte',
-      'Americano',
-    ];
-    return SizedBox(
-      height: 29,
-      child: ListView.builder(
-        itemCount: categories.length,
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        itemBuilder: (context, index) {
-          String category = categories[index];
-          bool isActive = categorySelected == category;
-          return GestureDetector(
-            onTap: () {
-              categorySelected = category;
-              setState(() {});
-            },
-            child: Container(
-              margin: EdgeInsets.only(
-                left: index == 0 ? 24 : 8,
-                right: index == categories.length - 1 ? 24 : 8,
-              ),
-              decoration: BoxDecoration(
-                color: isActive
-                    ? const Color(0xffC67C4E)
-                    : const Color(0xffEDEDED).withOpacity(0.35),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              alignment: Alignment.center,
-              child: Text(
-                category,
-                style: TextStyle(
-                  fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-                  fontSize: 14,
-                  color: isActive ? Colors.white : const Color(0xff313131),
+    return Consumer<CategoriesViewModel>(builder: (context, categoriesViewModel, child) {
+      if (categoriesViewModel.listCategories.status == Status.LOADING) {
+        return const Center(child: CircularProgressIndicator());
+      } else if (categoriesViewModel.listCategories.status == Status.ERROR) {
+        return Center(child: Text('Lỗi: ${categoriesViewModel.listCategories.message}'));
+      } else if (categoriesViewModel.listCategories.status == Status.COMPLETED) {
+        List<Categories> categoriesList = categoriesViewModel.listCategories.data?.data ?? [];
+        return SizedBox(
+          height: 29,
+          child: ListView.builder(
+            itemCount: categoriesList.length + 1, // +1 cho "All Coffee"
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            itemBuilder: (context, index) {
+              String category = index == 0 ? 'All Coffee' : categoriesList[index - 1].name.toString();
+              bool isActive = categorySelected == category;
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    categorySelected = category;
+                    // Nếu cần, bạn có thể gọi fetchCoffeeListApi() với danh mục đã chọn
+                    // Provider.of<HomeViewModel>(context, listen: false).fetchCoffeeListApiByCategory(category);
+                  });
+                },
+                child: Container(
+                  margin: EdgeInsets.only(
+                    left: index == 0 ? 24 : 8,
+                    right: index == categoriesList.length ? 24 : 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isActive ? const Color(0xffC67C4E) : const Color(0xffEDEDED).withOpacity(0.35),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  alignment: Alignment.center,
+                  child: Text(
+                    category,
+                    style: TextStyle(
+                      fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                      fontSize: 14,
+                      color: isActive ? Colors.white : const Color(0xff313131),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
+              );
+            },
+          ),
+        );
+      }
+      return Container(); // Trả về widget rỗng nếu không có dữ liệu.
+    });
   }
 
   Widget buildGridCoffee() {
-    return Consumer<HomeViewModel>(
-      builder: (context, homeViewModel, child) {
-        List<Coffee> coffeeList = homeViewModel.coffeeList.data?.data ?? [];
+    return Consumer<HomeViewModel>(builder: (context, homeViewModel, child) {
+      // Kiểm tra trạng thái của dữ liệu
+      if (homeViewModel.coffeeList.status == Status.LOADING) {
+        return const Center(child: CircularProgressIndicator());
+      } else if (homeViewModel.coffeeList.status == Status.ERROR) {
+        return Center(child: Text('Lỗi: ${homeViewModel.coffeeList.message}'));
+      } else if (homeViewModel.coffeeList.status == Status.COMPLETED) {
+        // Lấy danh sách coffee từ response
+        List<CoffeeData> coffeeList = homeViewModel.coffeeList.data?.coffeesData?.where((coffee) {
+          return categorySelected == 'All Coffee' || coffee.category == categorySelected;
+        }).toList() ?? [];
+
+        // Nếu danh sách coffee rỗng
+        if (coffeeList.isEmpty) {
+          return const Center(child: Text('Không có sản phẩm nào.'));
+        }
+
         return GridView.builder(
           itemCount: coffeeList.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -247,10 +272,10 @@ class _HomeFragmentState extends State<HomeFragment> {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
-            Coffee coffee = coffeeList[index];
+            CoffeeData coffee = coffeeList[index];
             return GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, RouteName.detail,arguments: coffee);
+                Navigator.pushNamed(context, RouteName.detail, arguments: coffee);
               },
               child: Container(
                 padding: const EdgeInsets.fromLTRB(8, 8, 8, 12),
@@ -266,7 +291,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(12),
                           child: Image.network(
-                            coffee.imageUrl.toString(),
+                            coffee.coffeeImageUrl.toString(),
                             height: 128,
                             width: double.infinity,
                             fit: BoxFit.cover,
@@ -300,7 +325,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                                 ),
                                 const Gap(4),
                                 Text(
-                                  '${coffee.ratingAverage}',
+                                  '${coffee.averageRating}',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 8,
@@ -315,7 +340,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                     ),
                     const Gap(8),
                     Text(
-                      coffee.name.toString(),
+                      coffee.coffeeName.toString(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -326,7 +351,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                     ),
                     const Gap(4),
                     Text(
-                      coffee.categoryName.toString(),
+                      coffee.category.toString(),
                       style: const TextStyle(
                         fontWeight: FontWeight.normal,
                         fontSize: 12,
@@ -342,7 +367,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                             decimalDigits: 2,
                             locale: 'en_US',
                             symbol: '\$ ',
-                          ).format(coffee.price),
+                          ).format(coffee.coffeePrice),
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 18,
@@ -370,10 +395,10 @@ class _HomeFragmentState extends State<HomeFragment> {
             );
           },
         );
-      },
-    );
+      }
+
+      return Container(); // Trả về widget rỗng nếu không có dữ liệu.
+    });
   }
 
 }
-
-

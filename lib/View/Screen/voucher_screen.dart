@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../Model/voucher_dto.dart';
 import '../../Data/Response/status.dart';
+import '../../ViewModel/auth_view_model.dart';
 import '../../ViewModel/voucher_view_model.dart';
 
 class VoucherScreen extends StatefulWidget {
@@ -21,8 +22,9 @@ class _VoucherScreenState extends State<VoucherScreen> {
     super.initState();
     selectedVouchers = List.from(widget.selectedVouchers);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
       Provider.of<VoucherViewModel>(context, listen: false)
-          .fetchVoucherListApi();
+          .fetchVoucherListApi(authViewModel.user!.uid);
     });
   }
 

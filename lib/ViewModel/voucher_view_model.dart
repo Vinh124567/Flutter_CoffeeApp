@@ -14,14 +14,13 @@ class VoucherViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchVoucherListApi() async {
+  Future<void> fetchVoucherListApi(String userId) async {
     setVoucherList(ApiResponse.loading());
-    _myRepo.fetchVoucherList("1").then((value) {
+    _myRepo.fetchVoucherList(userId).then((value) {
       setVoucherList(ApiResponse.completed(value));
     }).onError((error, stackTrace) {
       print('Error occurred: $error');
       print('Stack trace: $stackTrace');
-
       setVoucherList(ApiResponse.error(error.toString()));
     });
   }

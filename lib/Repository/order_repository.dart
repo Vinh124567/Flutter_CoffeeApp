@@ -10,7 +10,7 @@ class OrderRepository {
 
   Future newOrder(OrderDTO orderDTO) async {
     try {
-      String url = AppUrl.createOrderUrl(); // Sửa URL để phù hợp với việc tạo order
+      String url = AppUrl.createOrderUrl();
       dynamic jsonResponse = await _apiService.getPostApiResponse(
         url,
         orderDTO.toJson(), // Đảm bảo orderDTO.toJson() trả về Map<String, dynamic>
