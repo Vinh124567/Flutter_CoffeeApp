@@ -76,4 +76,9 @@ class CartItemData {
     }
     return data;
   }
+
+  @override
+  String toString() {
+    return 'CartItemData{id: $id, size: $size, coffeeData: $coffeeData, quantity: $quantity}';
+  }
 }

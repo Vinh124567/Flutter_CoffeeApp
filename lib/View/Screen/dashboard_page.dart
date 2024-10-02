@@ -1,4 +1,5 @@
 
+import 'package:coffee_shop/View/Screen/cart_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -27,7 +28,7 @@ class _DashboardPageState extends State<DashboardPage> {
     {
       'icon': 'assets/images/ic_bag_border.png',
       'icon_active': 'assets/images/ic_bag_border.png',
-      'fragment': const Center(child: Text('Bag')),
+      'fragment': const CartPage(),
     },
     {
       'icon': 'assets/images/ic_notification_border.png',

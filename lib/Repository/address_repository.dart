@@ -18,7 +18,7 @@ class AddressRepository {
 
   Future<Address> createAddress(Address address) async {
     try {
-      String url = AppUrl.postAddressUrl();
+      String url = AppUrl.postAddressUrl;
       dynamic jsonResponse = await _apiService.getPostApiResponse(
         url,
         address.toJson(), // Đảm bảo address.toJson() trả về Map<String, dynamic>

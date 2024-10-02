@@ -24,7 +24,7 @@ class CartItemRepository{
   // Phương thức thêm item vào giỏ hàng
   Future<Map<String, dynamic>> addItemToCart(CartItemCreateDTO request) async {
     try {
-      String url = AppUrl.addItemCartUrl();
+      String url = AppUrl.addItemCartUrl;
       dynamic jsonResponse = await _apiService.getPostApiResponse(
         url,
         request.toJson(),

@@ -1,18 +1,24 @@
-import 'package:coffee_shop/Model/Cart/cart_response.dart';
-import 'package:coffee_shop/ViewModel/order_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../../../Model/order_dto.dart';
-import '../../../Model/voucher_dto.dart';
-import '../../../Model/address_dto.dart';
+import '../../../Data/Network/stripe_service.dart';
+import '../../../Data/Response/status.dart';
+import '../../../Model/Cart/cart_response.dart';
+import '../../../Model/Enum/OrderStatus.dart';
+import '../../../Model/Enum/payment_status.dart';
+import '../../../Model/Order/order_create_request.dart';
+import '../../../Model/Order/order_item_dto.dart';
+import '../../../ViewModel/address_view_model.dart';
 import '../../../ViewModel/auth_view_model.dart';
-import '../../../ViewModel/payment_view_model.dart';
-import '../../StateDeliverScreen/CoffeeQuantityProvider.dart';
-import '../WidgetDeliver/AddressSection.dart';
-import '../WidgetDeliver/CoffeeListSection.dart';
-import '../WidgetDeliver/PaymentSummarySection.dart';
-import '../WidgetDeliver/VoucherSection.dart';
+import '../../../ViewModel/order_view_model.dart';
+import '../../../routes/route_name.dart';
+import '../../StateDeliverScreen/note_provider.dart';
+import '../../StateDeliverScreen/payment_method_provider.dart';
+import '../../StateDeliverScreen/voucher_provider.dart';
+import '../WidgetDeliver/address.dart';
+import '../WidgetDeliver/items.dart';
+import '../WidgetDeliver/payment_sumary.dart';
+import '../WidgetDeliver/voucher.dart';
 
 class Deliver extends StatefulWidget {
   final List<CartItemData> items;
@@ -24,214 +30,239 @@ class Deliver extends StatefulWidget {
 }
 
 class _DeliverState extends State<Deliver> {
-  OrderDTO? orderDTO;
-  List<Voucher> selectedVouchers = [];
-  Address? _selectedAddress;
-  String note = '';
-  List<OrderItem> orderItems = [];
-  List<String> voucherCode = [];
-  final TextEditingController _noteController = TextEditingController();
-
-  // void createOrderItems(CoffeeQuantityProvider coffeeQuantityProvider) {
-  //   orderItems = widget.items.map((coffee) {
-  //     final quantity = coffeeQuantityProvider.getQuantity(coffee);
-  //     // Tạo đối tượng OrderItem với id và quantity
-  //     return OrderItem(
-  //       quantity: quantity, // Gán số lượng
-  //       coffee: coffee, // Gán id của cà phê
-  //     );
-  //   }).toList();
-  // }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   String initialNote = widget.coffeesData.map((coffee) {
-  //     return '${coffee.coffeeName} - ${coffee.size}';
-  //   }).join('\n');
-  //   note = initialNote;
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     Provider.of<CoffeeQuantityProvider>(context, listen: false)
-  //         .initialize(widget.coffeesData);
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
-    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
-    final orderViewModel = Provider.of<OrderViewModel>(context, listen: false);
-    final paymentViewModel =
-        Provider.of<PaymentViewModel>(context, listen: false);
+    final paymentMethodProvider = Provider.of<PaymentMethodProvider>(context);
+
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
+      body: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 8,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Sử dụng AddressSection
-              AddressSection(
-                selectedAddress: _selectedAddress,
-                onAddressSelected: (Address? address) {
-                  setState(() {
-                    _selectedAddress = address;
-                  });
-                },
-                onNoteUpdated: (String newNote) {
-                  setState(() {
-                    note = newNote;
-                  });
-                },
-                note: note,
-                noteController: _noteController,
-              ),
-              const SizedBox(height: 15),
-              Divider(
-                color: Colors.grey.shade300,
-                thickness: 2,
-                indent: 20,
-                endIndent: 20,
-              ),
-              const SizedBox(height: 15),
-              // Sử dụng CoffeeListSection
-              CoffeeListSection(cartItems: widget.items),
-              const SizedBox(height: 20),
-              Divider(
-                color: Colors.grey.shade300,
-                thickness: 2,
-                indent: 20,
-                endIndent: 20,
-              ),
-              const SizedBox(height: 20),
-              // Sử dụng VoucherSection
-              VoucherSection(
-                initiallySelectedVouchers: selectedVouchers,
-                onVouchersSelected: (vouchers) {
-                  setState(() {
-                    selectedVouchers = vouchers;
-                    voucherCode = vouchers
-                        .map((voucher) => voucher.code)
-                        .whereType<String>()
-                        .toList();
-                  });
-                },
-              ),
-              const SizedBox(height: 10),
-              InkWell(
-                onTap: () async {
-                  paymentViewModel.selectAndProcessPaymentMethod(
-                      context); // Gọi hàm chọn và xử lý phương thức thanh toán
-                },
-                child: Container(
-                  height: 60,
-                  padding: const EdgeInsets.only(left: 20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.grey.shade100,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        spreadRadius: 2,
-                        blurRadius: 5,
-                        offset: const Offset(0, 3),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AddressSection(),
+                    const SizedBox(height: 15),
+                    Divider(color: Colors.grey.shade300, thickness: 2),
+                    const SizedBox(height: 15),
+                    ItemList(cartItems: widget.items),
+                    const SizedBox(height: 20),
+                    Divider(color: Colors.grey.shade300, thickness: 2),
+                    const SizedBox(height: 20),
+                    VoucherWidget(),
+                    const SizedBox(height: 10),
+                    // Payment Method Selection
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(context, RouteName.payment);
+                      },
+                      child: Container(
+                        height: 60,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.grey.shade100,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Icon(Icons.payment, size: 20),
+                            Consumer<PaymentMethodProvider>(
+                              builder: (context, provider, child) {
+                                return Text(
+                                  provider.selectedPaymentMethod?.isNotEmpty ==
+                                      true
+                                      ? provider.selectedPaymentMethod!
+                                      : "Phương thức thanh toán",
+                                );
+                              },
+                            ),
+                            const Icon(Icons.arrow_forward_ios),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Icon(Icons.payment, size: 20),
-                      // Sử dụng Consumer để cập nhật phương thức thanh toán
-                      Consumer<PaymentViewModel>(
-                        builder: (context, paymentViewModel, child) {
-                          return Text(paymentViewModel.paymentMethod);
-                        },
-                      ),
-                      const Icon(Icons.arrow_forward_ios),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 20),
+                    Divider(color: Colors.grey.shade300, thickness: 2),
+                    PaymentSummaryWidget(items: widget.items),
+                  ],
                 ),
               ),
-              const SizedBox(height: 20),
-              // Sử dụng PaymentSummarySection
-              PaymentSummarySection(selectedVouchers: selectedVouchers),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: buildPrice(authViewModel, orderViewModel),
+      bottomNavigationBar: buildPrice(context, paymentMethodProvider),
     );
   }
 
-  Widget buildPrice(
-      AuthViewModel authViewModel, OrderViewModel orderViewModel) {
-    double totalPrice = 0.0;
-    return Container(
-      height: 60,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, -3),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                "Total",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+  Widget buildPrice(BuildContext context, PaymentMethodProvider paymentMethodProvider) {
+    return Consumer5<AuthViewModel,
+        OrderViewModel,
+        VoucherProvider,
+        NoteProvider,
+        AddressViewModel>(
+      builder: (context, authViewModel, orderViewModel, voucherProvider,
+          noteProvider, addressViewModel, child) {
+        double totalPrice = voucherProvider.totalPriceAfterDiscount;
+        return Container(
+          height: 60,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: const Offset(0, -3),
               ),
-              Consumer<CoffeeQuantityProvider>(
-                builder: (context, coffeeQuantityProvider, child) {
-                  totalPrice = coffeeQuantityProvider
-                      .calculateTotalPrice(selectedVouchers);
-                  return Text(
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Total",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
                     NumberFormat.currency(
                       decimalDigits: 2,
                       locale: 'en_US',
                       symbol: '\$ ',
-                    ).format(coffeeQuantityProvider
-                        .calculateTotalPrice(selectedVouchers)),
+                    ).format(totalPrice),
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Color(0xffC67C4E),
                     ),
+                  ),
+                ],
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  // Kiểm tra xem có phương thức thanh toán được chọn không
+                  if (paymentMethodProvider.selectedPaymentMethod == null ||
+                      paymentMethodProvider.selectedPaymentMethod!.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Vui lòng chọn phương thức thanh toán!")),
+                    );
+                    return; // Ngừng thực hiện nếu không có phương thức thanh toán
+                  }
+
+                  bool paymentSuccess = false;
+
+                  if (paymentMethodProvider.selectedPaymentMethod == "Thanh toán Online") {
+                    // Gọi thanh toán Stripe
+                    paymentSuccess = await StripeService.instance.makePayment();
+                    if (!paymentSuccess) {
+                      // Thanh toán thất bại, hiển thị thông báo
+                      print("Thanh toán không thành công!");
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Thanh toán không thành công!")),
+                      );
+                      return; // Ngừng thực hiện nếu thanh toán thất bại
+                    }
+                  }
+
+                  // Tạo đơn hàng bất kể phương thức thanh toán
+                  await _createOrder(
+                    authViewModel,
+                    orderViewModel,
+                    voucherProvider,
+                    noteProvider,
+                    addressViewModel,
+                    paymentMethodProvider,
+                    paymentSuccess,
                   );
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xffC67C4E),
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: const Text(
+                  'Payment',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ],
           ),
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xffC67C4E), // Màu của nút
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20), // Tạo bo tròn cho nút
-              ),
-            ),
-            child: const Text(
-              'Payment',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          )
-        ],
-      ),
+        );
+      },
     );
   }
+
+  Future<void> _createOrder(AuthViewModel authViewModel,
+      OrderViewModel orderViewModel,
+      VoucherProvider voucherProvider,
+      NoteProvider noteProvider,
+      AddressViewModel addressViewModel,
+      PaymentMethodProvider paymentMethodProvider,
+      bool paymentSuccess) async {
+    OrderCreateRequest requestOrder = OrderCreateRequest()
+      ..userId = authViewModel.user?.uid.toString()
+      ..paymentStatus = paymentMethodProvider.selectedPaymentMethod == "Thanh toán Online" && paymentSuccess
+          ? PaymentStatus.paid.value // Nếu thanh toán online và thành công
+          : PaymentStatus.not_yet_paid.value // Nếu là thanh toán khi giao hàng hoặc thanh toán online thất bại
+      ..notes = noteProvider.note.toString()
+      ..orderItems = widget.items.map((item) => OrderItemDTO(
+        coffeeId: item.coffeeData?.coffeeId ?? 0,
+        quantity: item.quantity ?? 1,
+        size: item.size ?? "",
+      )).toList()
+      ..totalPrice = voucherProvider.totalPriceAfterDiscount
+      ..voucherCodes = voucherProvider.getVoucherCodes().cast<String>()
+      ..userAddressId = addressViewModel.selectedAddress?.id
+      ..status = OrderStatus.pending.value;
+
+    print("Request order: $requestOrder");
+
+    // Gọi API và nhận phản hồi
+    var response = await orderViewModel.newOrderApi(requestOrder);
+    // Xử lý phản hồi từ API
+    if (response.status == Status.COMPLETED) {
+      print("Order created successfully!");
+      Navigator.pushNamed(context, RouteName.receipt);
+    } else if (response.status == Status.ERROR) {
+      print("Failed to create order: ${response.message}");
+      // Hiển thị thông báo lỗi
+    }
+  }
+
 }

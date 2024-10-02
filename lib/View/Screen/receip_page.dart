@@ -1,8 +1,17 @@
+import 'package:coffee_shop/View/StateDeliverScreen/voucher_provider.dart';
+import 'package:coffee_shop/ViewModel/order_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ReceiptScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final orderViewModel = Provider.of<OrderViewModel>(context);
+
+    // Giả định rằng bạn có một danh sách sản phẩm trong orderViewModel
+    final productList = orderViewModel.addItemResponse.data!.data!.orderItems;
+    final typePrice = Provider.of<VoucherProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Hóa đơn'),
@@ -17,44 +26,44 @@ class ReceiptScreen extends StatelessWidget {
               'Giao dịch của bạn đã thành công',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16), // Increased spacing
+            SizedBox(height: 16),
 
             // Transaction ID and Time
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Mã giao dịch', style: TextStyle(fontSize: 14)),
-                Text('1713577280022', style: TextStyle(fontSize: 14)),
+                Text(orderViewModel.addItemResponse.data!.data!.transactionCode.toString(), style: TextStyle(fontSize: 14)),
               ],
             ),
-            SizedBox(height: 12), // Increased spacing
+            SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Thời gian', style: TextStyle(fontSize: 14)),
-                Text('20-04-2024, 08:41 AM', style: TextStyle(fontSize: 14)),
+                Text(orderViewModel.addItemResponse.data!.data!.orderDate.toString(), style: TextStyle(fontSize: 14)),
               ],
             ),
             Divider(),
 
             // Product List
-            ProductItem(
-              name: 'Coffee Marshmallow',
-              price: 30000,
-              quantity: 2,
-              image: 'assets/images/banner.png',
-            ),
+            ...?productList?.map((product) => ProductItem(
+              name: product.coffeeData!.coffeeName.toString(),
+              price: product.coffeeData!.coffeePrice!.toDouble(),
+              quantity: product.quantity!.toInt(),
+              image: product.coffeeData!.coffeeImageUrl.toString(),
+            )).toList(),
 
             Divider(),
 
             // Payment Summary
-            SummaryItem(label: 'Giá', value: '140.000vnd'),
-            SizedBox(height: 6), // Increased spacing
-            SummaryItem(label: 'Khuyến mại', value: '-14.000vnd'),
-            SizedBox(height: 6), // Increased spacing
-            SummaryItem(label: 'Tổng tiền', value: '126.000vnd', isBold: true),
+            SummaryItem(label: 'Giá', value: typePrice.originalPrice.toString()),
+            SizedBox(height: 6),
+            SummaryItem(label: 'Khuyến mại', value:typePrice.totalDiscount.toString()),
+            SizedBox(height: 6),
+            SummaryItem(label: 'Tổng tiền', value: typePrice.totalPriceAfterDiscount.toString(), isBold: true),
 
-            SizedBox(height: 16), // Increased spacing
+            SizedBox(height: 16),
             Text('Phương thức thanh toán', style: TextStyle(fontSize: 14)),
             SizedBox(height: 16),
             Text(
@@ -65,15 +74,15 @@ class ReceiptScreen extends StatelessWidget {
 
             // Delivery Information
             Text('Địa chỉ giao hàng', style: TextStyle(fontSize: 14)),
-            SizedBox(height: 16), // Increased spacing
-            SummaryItem(label: 'Họ và Tên', value: 'Nguyen Thu Thuy'),
-            SizedBox(height: 6), // Increased spacing
-            SummaryItem(label: 'Điện thoại', value: '0986868686'),
-            SizedBox(height: 6), // Increased spacing
-            SummaryItem(label: 'Địa chỉ', value: 'Trung Kinh, Cau Giay, Ha Noi'),
+            SizedBox(height: 16),
+            SummaryItem(label: 'Họ và Tên', value: orderViewModel.addItemResponse.data!.data!.address!.name.toString()),
+            SizedBox(height: 6),
+            SummaryItem(label: 'Điện thoại', value: orderViewModel.addItemResponse.data!.data!.address!.phone.toString()),
+            SizedBox(height: 6),
+            SummaryItem(label: 'Địa chỉ', value: orderViewModel.addItemResponse.data!.data!.address!.address.toString()),
 
             // Button to track the order
-            SizedBox(height: 24), // Space before the button
+            SizedBox(height: 24),
             Center(
               child: ElevatedButton(
                 onPressed: () {
@@ -95,7 +104,7 @@ class ReceiptScreen extends StatelessWidget {
 // Widget to display product details
 class ProductItem extends StatelessWidget {
   final String name;
-  final int price;
+  final double price;
   final int quantity;
   final String image;
 
@@ -112,7 +121,8 @@ class ProductItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
-          Image.asset(image, width: 50, height: 50),
+          // Sử dụng Image.network để tải ảnh từ internet
+          Image.network(image, width: 50, height: 50, fit: BoxFit.cover),
           SizedBox(width: 10),
           Expanded(
             child: Column(

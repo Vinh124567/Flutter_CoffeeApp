@@ -3,6 +3,7 @@ import 'package:coffee_shop/View/Screen/add_address_page.dart';
 import 'package:coffee_shop/View/Screen/cart_screen.dart';
 import 'package:coffee_shop/View/Screen/dashboard_page.dart';
 import 'package:coffee_shop/View/Screen/detail_screen.dart';
+import 'package:coffee_shop/View/Screen/note_page.dart';
 import 'package:coffee_shop/View/Screen/onboard_page.dart';
 import 'package:coffee_shop/View/Screen/receip_page.dart';
 import 'package:coffee_shop/View/Screen/payment_method_screen.dart';
@@ -24,6 +25,8 @@ class Routes {
         return MaterialPageRoute(builder: (BuildContext context) => const Login());
       case RouteName.receipt:
         return MaterialPageRoute(builder: (BuildContext context) => ReceiptScreen());
+      case RouteName.note:
+        return MaterialPageRoute(builder: (BuildContext context) => const NotePage());
       case RouteName.register:
         return MaterialPageRoute(builder: (BuildContext context) => const Register());
       case RouteName.home:
@@ -35,16 +38,14 @@ class Routes {
       case RouteName.payment:
         return MaterialPageRoute(builder: (BuildContext context) => PaymentMethodScreen());
       case RouteName.voucher:
-        final List<Voucher> selectedVouchers = setting.arguments as List<Voucher>;
-        return MaterialPageRoute(
-          builder: (BuildContext context) => VoucherScreen(selectedVouchers: selectedVouchers),
+        return MaterialPageRoute(builder: (BuildContext context) => VoucherScreen(),
         );
       case RouteName.onboard:
         return MaterialPageRoute(builder: (BuildContext context) => const OnboardPage());
       case RouteName.address:
         final Address? selectedAddress = setting.arguments as Address?;
         return MaterialPageRoute(
-          builder: (BuildContext context) => AddressPage(selectedAddress: selectedAddress),
+          builder: (BuildContext context) => AddressPage(),
         );
       case RouteName.detail:
         final CoffeeData coffee = setting.arguments as CoffeeData;

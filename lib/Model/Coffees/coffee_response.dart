@@ -64,4 +64,9 @@ class CoffeeData {
     data['category'] = this.category; // Thêm category vào JSON
     return data;
   }
+
+  @override
+  String toString() {
+    return 'CoffeeData{coffeeId: $coffeeId, coffeeName: $coffeeName, coffeeImageUrl: $coffeeImageUrl, coffeePrice: $coffeePrice, coffeeDescription: $coffeeDescription, averageRating: $averageRating, category: $category}';
+  }
 }

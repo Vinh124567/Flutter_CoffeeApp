@@ -7,64 +7,19 @@ import '../../Model/address_dto.dart';
 import '../../ViewModel/address_view_model.dart';
 import '../../routes/route_name.dart';
 
-class AddressPage extends StatefulWidget {
-  final Address? selectedAddress;
-  const AddressPage({super.key, this.selectedAddress});
-
-  @override
-  _AddressPageState createState() => _AddressPageState();
-}
-
-class _AddressPageState extends State<AddressPage> {
-  int? _selectedIndex;
-
-
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final addressViewModel =
-          Provider.of<AddressViewModel>(context, listen: false);
-           final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
-          addressViewModel.fetchAddressListApi(authViewModel.user!.uid.toString());
-
-
-      // Kiểm tra nếu đã có địa chỉ được chọn trước đó và đánh dấu nó
-      if (widget.selectedAddress != null) {
-        final selectedAddress = widget.selectedAddress;
-        addressViewModel.fetchAddressListApi(authViewModel.user!.uid.toString()).then((_) {
-          final selectedIndex =
-              addressViewModel.addressList.data?.data?.indexWhere(
-            (address) => address.id == selectedAddress?.id,
-          );
-          if (selectedIndex != null && selectedIndex != -1) {
-            setState(() {
-              _selectedIndex = selectedIndex;
-            });
-          }
-        });
-      }
-    });
-  }
-
-  void _onItemTap(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    final addressViewModel =
-        Provider.of<AddressViewModel>(context, listen: false);
-    final selectedAddress = addressViewModel.addressList.data?.data?[index];
-
-    if (selectedAddress != null) {
-      // Trả về địa chỉ đã chọn và quay lại màn hình trước đó
-      Navigator.pop(context, selectedAddress);
-    }
-  }
+class AddressPage extends StatelessWidget {
+  const AddressPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final addressViewModel = Provider.of<AddressViewModel>(context, listen: false);
+    final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+
+    // Gọi API để lấy danh sách địa chỉ khi màn hình được xây dựng
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      addressViewModel.fetchAddressListApi(authViewModel.user!.uid.toString());
+    });
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50),
@@ -81,8 +36,7 @@ class _AddressPageState extends State<AddressPage> {
             ],
           ),
           child: AppBar(
-            title:
-                const Text("Địa chỉ của tôi", style: TextStyle(fontSize: 16)),
+            title: const Text("Địa chỉ của tôi", style: TextStyle(fontSize: 16)),
             centerTitle: true,
             toolbarHeight: 50,
             leading: IconButton(
@@ -101,10 +55,7 @@ class _AddressPageState extends State<AddressPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Địa chỉ",
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-            ),
+            const Text("Địa chỉ", style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             Consumer<AddressViewModel>(
               builder: (context, addressViewModel, child) {
@@ -113,14 +64,12 @@ class _AddressPageState extends State<AddressPage> {
                     return const Center(child: CircularProgressIndicator());
                   case Status.ERROR:
                     return Center(
-                      child: Text(addressViewModel.addressList.message ??
-                          'Đã xảy ra lỗi.'),
+                      child: Text(addressViewModel.addressList.message ?? 'Đã xảy ra lỗi.'),
                     );
                   case Status.COMPLETED:
                     final addressList = addressViewModel.addressList.data?.data;
                     if (addressList == null || addressList.isEmpty) {
-                      return const Center(
-                          child: Text('Danh sách địa chỉ trống.'));
+                      return const Center(child: Text('Danh sách địa chỉ trống.'));
                     }
                     return Expanded(
                       child: ListView.builder(
@@ -128,7 +77,9 @@ class _AddressPageState extends State<AddressPage> {
                         itemBuilder: (context, index) {
                           final address = addressList[index];
                           return InkWell(
-                            onTap: () => _onItemTap(index),
+                            onTap: () {
+                              addressViewModel.setSelectedAddress(address);
+                            },
                             child: Container(
                               color: Colors.white,
                               child: Column(
@@ -137,39 +88,35 @@ class _AddressPageState extends State<AddressPage> {
                                   const SizedBox(height: 10),
                                   Row(
                                     children: [
-                                      Radio<int>(
-                                        value: index,
-                                        groupValue: _selectedIndex,
-                                        onChanged: (int? value) {
-                                          _onItemTap(value ?? 0);
+                                      Radio<Address>(
+                                        value: address,
+                                        groupValue: addressViewModel.selectedAddress, // Sử dụng selectedAddress làm groupValue
+                                        onChanged: (Address? value) {
+                                          addressViewModel.setSelectedAddress(value);
                                         },
                                         activeColor: Colors.blue,
                                       ),
                                       const SizedBox(width: 10),
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Row(
                                               children: [
                                                 const Text("Tên: "),
-                                                Text(address.name ??
-                                                    'Chưa có tên'),
+                                                Text(address.name ?? 'Chưa có tên'),
                                               ],
                                             ),
                                             Row(
                                               children: [
                                                 const Text("Số điện thoại: "),
-                                                Text(address.phone ??
-                                                    'Chưa có số điện thoại'),
+                                                Text(address.phone ?? 'Chưa có số điện thoại'),
                                               ],
                                             ),
                                             Row(
                                               children: [
                                                 const Text("Địa chỉ: "),
-                                                Text(address.address ??
-                                                    'Chưa có địa chỉ'),
+                                                Text(address.address ?? 'Chưa có địa chỉ'),
                                               ],
                                             ),
                                           ],
@@ -199,11 +146,12 @@ class _AddressPageState extends State<AddressPage> {
                               ),
                             ),
                           );
+
                         },
                       ),
                     );
                   default:
-                    return const Center(child: Text('Unknown error occurred'));
+                    return const Center(child: Text('Đã xảy ra lỗi không xác định.'));
                 }
               },
             ),
@@ -212,12 +160,9 @@ class _AddressPageState extends State<AddressPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final result =
-              await Navigator.pushNamed(context, RouteName.newaddress);
-          final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+          final result = await Navigator.pushNamed(context, RouteName.newaddress);
           if (result == true) {
-            Provider.of<AddressViewModel>(context, listen: false)
-                .fetchAddressListApi(authViewModel.user!.uid.toString());
+            addressViewModel.fetchAddressListApi(authViewModel.user!.uid.toString());
           }
         },
         backgroundColor: Colors.blue,

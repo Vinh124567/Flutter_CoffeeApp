@@ -4,23 +4,19 @@ import '../../../Model/voucher_dto.dart';
 import '../../Data/Response/status.dart';
 import '../../ViewModel/auth_view_model.dart';
 import '../../ViewModel/voucher_view_model.dart';
+import '../StateDeliverScreen/voucher_provider.dart';
 
 class VoucherScreen extends StatefulWidget {
-  final List<Voucher> selectedVouchers;
-
-  const VoucherScreen({super.key, required this.selectedVouchers});
+  const VoucherScreen({super.key});
 
   @override
   _VoucherScreenState createState() => _VoucherScreenState();
 }
 
 class _VoucherScreenState extends State<VoucherScreen> {
-  late List<Voucher> selectedVouchers;
-
   @override
   void initState() {
     super.initState();
-    selectedVouchers = List.from(widget.selectedVouchers);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
       Provider.of<VoucherViewModel>(context, listen: false)
@@ -34,16 +30,17 @@ class _VoucherScreenState extends State<VoucherScreen> {
       appBar: AppBar(
         title: const Text("Select Vouchers"),
         leading: IconButton(
-          onPressed: () => Navigator.pop(context,selectedVouchers),
+          onPressed: () => Navigator.pop(context),
           icon: const ImageIcon(
             AssetImage('assets/images/ic_arrow_left.png'),
           ),
         ),
       ),
-      body: Consumer<VoucherViewModel>(
-        builder: (context, voucherViewModel, child) {
+      body: Consumer2<VoucherViewModel, VoucherProvider>(
+        builder: (context, voucherViewModel, voucherProvider, child) {
           List<Voucher> availableVouchers =
               voucherViewModel.voucherList.data?.data ?? [];
+
           switch (voucherViewModel.voucherList.status!) {
             case Status.LOADING:
               return const Center(child: CircularProgressIndicator());
@@ -55,7 +52,7 @@ class _VoucherScreenState extends State<VoucherScreen> {
                 itemCount: availableVouchers.length,
                 itemBuilder: (context, index) {
                   final voucher = availableVouchers[index];
-                  final isSelected = selectedVouchers.contains(voucher);
+                  final isSelected = voucherProvider.isSelected(voucher);
 
                   return ListTile(
                     title: Text(voucher.code ?? "Unknown Voucher"),
@@ -73,13 +70,7 @@ class _VoucherScreenState extends State<VoucherScreen> {
                         ? const Icon(Icons.check_box, color: Colors.green)
                         : const Icon(Icons.check_box_outline_blank),
                     onTap: () {
-                      setState(() {
-                        if (isSelected) {
-                          selectedVouchers.remove(voucher);
-                        } else {
-                          selectedVouchers.add(voucher);
-                        }
-                      });
+                      voucherProvider.toggleVoucher(voucher); // Cập nhật danh sách voucher thông qua Provider
                     },
                   );
                 },

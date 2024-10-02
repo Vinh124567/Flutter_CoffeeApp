@@ -12,4 +12,5 @@ class RouteName{
   static const String cart="cart_screen";
   static const String register="register_screen";
   static const String payment="paymentmethod_screen";
+  static const String note="note_screen";
 }

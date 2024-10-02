@@ -3,16 +3,15 @@ import 'package:coffee_shop/Model/Cart/cart_response.dart';
 import 'package:flutter/material.dart';
 
 
-class CoffeeListSection extends StatelessWidget {
+class ItemList extends StatelessWidget {
   final List<CartItemData> cartItems;
 
-  const CoffeeListSection({Key? key, required this.cartItems}) : super(key: key);
+  const ItemList({Key? key, required this.cartItems}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: cartItems.map((cartItem) {
-        // Lấy coffeeData từ cartItem
         final coffee = cartItem.coffeeData;
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
