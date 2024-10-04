@@ -1,12 +1,18 @@
 
 import 'package:coffee_shop/View/Screen/cart_screen.dart';
+import 'package:coffee_shop/View/Screen/my_order_page.dart';
+import 'package:coffee_shop/View/Screen/user_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
+import '../Widget/WidgetMyOrder/tab_bar.dart';
 import 'home_screen.dart';
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+  final int initialIndex; // Tham số để nhận chỉ số của menu
+
+  const DashboardPage({Key? key, this.initialIndex = 0}) : super(key: key);
+  // const DashboardPage({super.key});
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -21,9 +27,9 @@ class _DashboardPageState extends State<DashboardPage> {
       'fragment': const HomeFragment(),
     },
     {
-      'icon': 'assets/images/ic_heart_border.png',
-      'icon_active': 'assets/images/ic_heart_border.png',
-      'fragment': const Center(child: Text('Favorite')),
+      'icon': 'assets/images/shipped.png',
+      'icon_active': 'assets/images/shipped.png',
+      'fragment': MyOrderPage() ,
     },
     {
       'icon': 'assets/images/ic_bag_border.png',
@@ -33,7 +39,7 @@ class _DashboardPageState extends State<DashboardPage> {
     {
       'icon': 'assets/images/ic_notification_border.png',
       'icon_active': 'assets/images/ic_notification_border.png',
-      'fragment': const Center(child: Text('Notification')),
+      'fragment':  UserScreen(),
     },
   ];
 

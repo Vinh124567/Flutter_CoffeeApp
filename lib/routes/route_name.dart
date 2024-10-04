@@ -1,16 +1,21 @@
-class RouteName{
-  static const String login="login_screen";
-  static const String home="home_screen";
-  static const String receipt="receipt_screen";
-  static const String start_screen="start_screen";
-  static const String detail="detail_screen";
-  static const String order="order_screen";
-  static const String onboard="onboard_screen";
-  static const String voucher="voucher_screen";
-  static const String address="address_screen";
-  static const String newaddress="new_address_screen";
-  static const String cart="cart_screen";
-  static const String register="register_screen";
-  static const String payment="paymentmethod_screen";
-  static const String note="note_screen";
+class RouteName {
+  static const String login = "login_screen";
+  static const String home = "home_screen";
+  static const String receipt = "receipt_screen";
+  static const String start_screen = "start_screen";
+  static const String detail = "detail_screen";
+  static const String order = "order_screen";
+  static const String onboard = "onboard_screen";
+  static const String voucher = "voucher_screen";
+  static const String address = "address_screen";
+  static const String newaddress = "new_address_screen";
+  static const String cart = "cart_screen";
+  static const String register = "register_screen";
+  static const String payment = "paymentmethod_screen";
+  static const String note = "note_screen";
+  static const String order_detail = "detail_order_screen";
+  static const String my_order = "my_order";
+  static const String rating_page = "rating_page";
+  static const String change_password_page = "changePassword";
+  static const String edit_address_page = "editAddressPage";
 }

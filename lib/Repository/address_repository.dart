@@ -30,4 +30,18 @@ class AddressRepository {
     }
   }
 
+  Future<AddressDTO> updateAddress(Address address) async {
+    try {
+      String url = AppUrl.postAddressUrl;
+      dynamic jsonResponse = await _apiService.getPutApiResponse(
+        url,
+        address.toJson(),
+      );
+      return AddressDTO.fromJson(jsonResponse);
+    } catch (e) {
+      print("Error update address: ${e.toString()}");
+      rethrow;
+    }
+  }
+
 }

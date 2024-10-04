@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:coffee_shop/ViewModel/auth_view_model.dart';
-
+import '../../Utils/utils.dart';
 import '../../routes/route_name.dart';
 
 class Login extends StatefulWidget {
@@ -26,12 +26,13 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
+      body: SingleChildScrollView( // Thêm SingleChildScrollView
+        padding: const EdgeInsets.fromLTRB(20, 70, 20, 10),
         child: Form(
           key: _formKey,
           child: Consumer<AuthViewModel>(
             builder: (context, authViewModel, child) {
+              // Điều hướng nếu người dùng đã đăng nhập
               if (authViewModel.user != null) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   Navigator.pushReplacementNamed(context, RouteName.home);
@@ -87,6 +88,7 @@ class _LoginState extends State<Login> {
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
+
                     onPressed: authViewModel.loading
                         ? null
                         : () {
@@ -94,6 +96,7 @@ class _LoginState extends State<Login> {
                         authViewModel.signIn(
                           _emailController.text,
                           _passwordController.text,
+                          context,
                         );
                       }
                     },

@@ -109,8 +109,6 @@ class CartItemViewModel with ChangeNotifier {
   }
 
   Future<ApiResponse<String>> addItemToCartApi(CartItemData request) async {
-
-
       final existingItem = _localCartItems.firstWhere(
             (cartItem) =>
         cartItem.coffeeData?.coffeeId == request.coffeeData?.coffeeId &&

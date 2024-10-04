@@ -6,7 +6,7 @@ import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../Data/Response/status.dart';
-import '../../ViewModel/home_view_model.dart';
+import '../../ViewModel/coffee_view_model.dart';
 import '../../routes/route_name.dart';
 
 class HomeFragment extends StatefulWidget {
@@ -24,7 +24,7 @@ class _HomeFragmentState extends State<HomeFragment> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Fetch Coffee List
-      Provider.of<HomeViewModel>(context, listen: false).fetchCoffeeListApi();
+      Provider.of<CoffeeViewModel>(context, listen: false).fetchCoffeeListApi();
       // Fetch Categories List
       Provider.of<CategoriesViewModel>(context, listen: false).fetchCategoriesListApi();
     });
@@ -243,7 +243,7 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   Widget buildGridCoffee() {
-    return Consumer<HomeViewModel>(builder: (context, homeViewModel, child) {
+    return Consumer<CoffeeViewModel>(builder: (context, homeViewModel, child) {
       // Kiểm tra trạng thái của dữ liệu
       if (homeViewModel.coffeeList.status == Status.LOADING) {
         return const Center(child: CircularProgressIndicator());

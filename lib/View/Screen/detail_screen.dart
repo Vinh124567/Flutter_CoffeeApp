@@ -24,8 +24,6 @@ class _DetailPageState extends State<DetailPage> {
   String sizeSelected = 'M';
   int quantity = 1;
 
-
-
   @override
   Widget build(BuildContext context) {
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
@@ -81,7 +79,6 @@ class _DetailPageState extends State<DetailPage> {
       ],
     );
   }
-
   Widget buildImage() {
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),

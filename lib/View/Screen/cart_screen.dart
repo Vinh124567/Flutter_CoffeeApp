@@ -134,14 +134,9 @@ class _CartPageState extends State<CartPage> {
 
   Widget buildHeader() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const ImageIcon(
-            AssetImage('assets/images/ic_arrow_left.png'),
-          ),
-        ),
+
         const Text(
           'Your Cart',
           style: TextStyle(
@@ -150,14 +145,7 @@ class _CartPageState extends State<CartPage> {
             color: Color(0xff242424),
           ),
         ),
-        IconButton(
-          onPressed: () {
-            // Chức năng thêm nếu cần
-          },
-          icon: const ImageIcon(
-            AssetImage('assets/images/bean.png'),
-          ),
-        ),
+
       ],
     );
   }

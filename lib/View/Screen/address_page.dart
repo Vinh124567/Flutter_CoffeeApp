@@ -127,7 +127,7 @@ class AddressPage extends StatelessWidget {
                                         onPressed: () {
                                           Navigator.pushNamed(
                                             context,
-                                            RouteName.newaddress,
+                                            RouteName.edit_address_page,
                                             arguments: address,
                                           );
                                         },

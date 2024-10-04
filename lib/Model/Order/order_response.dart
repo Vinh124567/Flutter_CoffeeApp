@@ -1,3 +1,4 @@
+import 'dart:ffi';
 
 import 'package:coffee_shop/Model/Cart/cart_response.dart';
 
@@ -13,7 +14,9 @@ class OrderResponse {
   OrderResponse.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
-    data = json['data'] != null ? new OrderResponseData.fromJson(json['data']) : null;
+    data = json['data'] != null
+        ? new OrderResponseData.fromJson(json['data'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -41,25 +44,31 @@ class OrderResponseData {
   String? status;
   List<CartItemData>? orderItems;
   String? transactionCode;
+  double? discountAmount;
+  double? totalAfterDiscount;
 
   OrderResponseData(
       {this.id,
-        this.orderDate,
-        this.totalPrice,
-        this.notes,
-        this.address,
-        this.status,
-        this.orderItems,
-      this.transactionCode});
+      this.orderDate,
+      this.totalPrice,
+      this.notes,
+      this.address,
+      this.status,
+      this.orderItems,
+      this.transactionCode,
+      this.discountAmount,
+      this.totalAfterDiscount});
 
   OrderResponseData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     orderDate = json['orderDate'];
     totalPrice = json['totalPrice'];
     notes = json['notes'];
-    transactionCode=json['transactionCode'];
+    transactionCode = json['transactionCode'];
+    discountAmount=json['discountAmount'];
+    totalAfterDiscount=json['totalAfterDiscount'];
     address =
-    json['address'] != null ? new Address.fromJson(json['address']) : null;
+        json['address'] != null ? new Address.fromJson(json['address']) : null;
     status = json['status'];
     if (json['orderItems'] != null) {
       orderItems = <CartItemData>[];
@@ -75,7 +84,9 @@ class OrderResponseData {
     data['orderDate'] = this.orderDate;
     data['totalPrice'] = this.totalPrice;
     data['notes'] = this.notes;
-    data['transactionCode']=this.transactionCode;
+    data['discountAmount']=this.discountAmount;
+    data['totalAfterDiscount']=this.totalAfterDiscount;
+    data['transactionCode'] = this.transactionCode;
     if (this.address != null) {
       data['address'] = this.address!.toJson();
     }
@@ -88,6 +99,6 @@ class OrderResponseData {
 
   @override
   String toString() {
-    return 'OrderResponseData{id: $id, orderDate: $orderDate, totalPrice: $totalPrice, notes: $notes, address: $address, status: $status, orderItems: $orderItems, transactionCode: $transactionCode}';
+    return 'OrderResponseData{id: $id, orderDate: $orderDate, totalPrice: $totalPrice, notes: $notes, address: $address, status: $status, orderItems: $orderItems, transactionCode: $transactionCode, discountAmount: $discountAmount, totalAfterDiscount: $totalAfterDiscount}';
   }
 }

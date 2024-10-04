@@ -1,7 +1,5 @@
-import 'package:coffee_shop/Model/Cart/cart_response.dart';
-import 'package:coffee_shop/Model/Order/order_item_dto.dart';
 
-import 'order_response.dart';
+import 'package:coffee_shop/Model/Order/order_item_dto.dart';
 
 class OrderCreateRequest {
   String? userId;
@@ -12,6 +10,8 @@ class OrderCreateRequest {
   List<String>? voucherCodes;
   int? userAddressId;
   String? paymentStatus;
+  double? discountAmount;
+  double? totalAfterDiscount;
 
   OrderCreateRequest(
       {this.userId,
@@ -21,13 +21,17 @@ class OrderCreateRequest {
         this.orderItems,
         this.voucherCodes,
         this.userAddressId,
-      this.paymentStatus});
+      this.paymentStatus,
+        this.discountAmount,
+        this.totalAfterDiscount});
 
   OrderCreateRequest.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
     totalPrice = json['totalPrice'];
     notes = json['notes'];
     status = json['status'];
+    discountAmount=json['discountAmount'];
+    totalAfterDiscount=json['totalAfterDiscount'];
     if (json['orderItems'] != null) {
       orderItems = <OrderItemDTO>[];
       json['orderItems'].forEach((v) {
@@ -49,6 +53,8 @@ class OrderCreateRequest {
       data['orderItems'] = this.orderItems!.map((v) => v.toJson()).toList();
     }
     data['voucherCodes'] = this.voucherCodes;
+    data['discountAmount']=this.discountAmount;
+    data['totalAfterDiscount']=this.totalAfterDiscount;
     data['userAddressId'] = this.userAddressId;
     data['paymentStatus']=this.paymentStatus;
     return data;

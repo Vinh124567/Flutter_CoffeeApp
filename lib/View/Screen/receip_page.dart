@@ -1,101 +1,180 @@
+import 'package:coffee_shop/View/Screen/home_screen.dart';
 import 'package:coffee_shop/View/StateDeliverScreen/voucher_provider.dart';
 import 'package:coffee_shop/ViewModel/order_view_model.dart';
+import 'package:coffee_shop/routes/route_name.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
+
+import '../../Model/Cart/cart_response.dart';
+import '../Widget/button_primary.dart';
 
 class ReceiptScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final orderViewModel = Provider.of<OrderViewModel>(context);
-
-    // Giả định rằng bạn có một danh sách sản phẩm trong orderViewModel
     final productList = orderViewModel.addItemResponse.data!.data!.orderItems;
     final typePrice = Provider.of<VoucherProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Hóa đơn'),
+      body: ListView(
+        physics: const BouncingScrollPhysics(),
+        children: [
+          // Main Scrollable Content
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Gap(68),
+                buildHeader(),
+                const Gap(38),
+                buildTransactionMessage(),
+                const SizedBox(height: 36),
+                buildTransactionInfo(orderViewModel),
+                const Divider(),
+                buildProductList(productList),
+                const Divider(),
+                buildPaymentSummary(typePrice),
+                const Divider(),
+                buildPaymentMethod(),
+                const Divider(),
+                buildDeliveryInfo(orderViewModel),
+              ],
+            ),
+          ),
+          buildBottomNavigation(context),
+        ],
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Transaction Success Message
-            Text(
-              'Giao dịch của bạn đã thành công',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16),
+    );
+  }
 
-            // Transaction ID and Time
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Mã giao dịch', style: TextStyle(fontSize: 14)),
-                Text(orderViewModel.addItemResponse.data!.data!.transactionCode.toString(), style: TextStyle(fontSize: 14)),
-              ],
-            ),
-            SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Thời gian', style: TextStyle(fontSize: 14)),
-                Text(orderViewModel.addItemResponse.data!.data!.orderDate.toString(), style: TextStyle(fontSize: 14)),
-              ],
-            ),
-            Divider(),
+  AppBar buildAppBar() {
+    return AppBar(
+      title: const Text('Hóa đơn'),
+    );
+  }
 
-            // Product List
-            ...?productList?.map((product) => ProductItem(
-              name: product.coffeeData!.coffeeName.toString(),
-              price: product.coffeeData!.coffeePrice!.toDouble(),
-              quantity: product.quantity!.toInt(),
-              image: product.coffeeData!.coffeeImageUrl.toString(),
-            )).toList(),
-
-            Divider(),
-
-            // Payment Summary
-            SummaryItem(label: 'Giá', value: typePrice.originalPrice.toString()),
-            SizedBox(height: 6),
-            SummaryItem(label: 'Khuyến mại', value:typePrice.totalDiscount.toString()),
-            SizedBox(height: 6),
-            SummaryItem(label: 'Tổng tiền', value: typePrice.totalPriceAfterDiscount.toString(), isBold: true),
-
-            SizedBox(height: 16),
-            Text('Phương thức thanh toán', style: TextStyle(fontSize: 14)),
-            SizedBox(height: 16),
-            Text(
-              'Credit or debit card',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-            ),
-            Divider(),
-
-            // Delivery Information
-            Text('Địa chỉ giao hàng', style: TextStyle(fontSize: 14)),
-            SizedBox(height: 16),
-            SummaryItem(label: 'Họ và Tên', value: orderViewModel.addItemResponse.data!.data!.address!.name.toString()),
-            SizedBox(height: 6),
-            SummaryItem(label: 'Điện thoại', value: orderViewModel.addItemResponse.data!.data!.address!.phone.toString()),
-            SizedBox(height: 6),
-            SummaryItem(label: 'Địa chỉ', value: orderViewModel.addItemResponse.data!.data!.address!.address.toString()),
-
-            // Button to track the order
-            SizedBox(height: 24),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  // Thêm hành động theo dõi đơn hàng tại đây
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Theo dõi đơn hàng được nhấn!')),
-                  );
-                },
-                child: Text('Theo dõi đơn hàng'),
-              ),
-            ),
-          ],
+  Widget buildTransactionMessage() {
+    return Center(
+      child: const Text(
+        'Giao dịch của bạn đã thành công',
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.green
         ),
+      ),
+    );
+
+  }
+
+  Widget buildHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          'Chi Tiết Hóa Đơn',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+            color: Color(0xff242424),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildTransactionInfo(OrderViewModel orderViewModel) {
+    return Column(
+      children: [
+        buildInfoRow('Mã giao dịch', orderViewModel.addItemResponse.data!.data!.transactionCode.toString()),
+        const SizedBox(height: 12),
+        buildInfoRow('Thời gian', orderViewModel.addItemResponse.data!.data!.orderDate.toString()),
+      ],
+    );
+  }
+
+  Widget buildInfoRow(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: const TextStyle(fontSize: 14)),
+        Text(value, style: const TextStyle(fontSize: 14)),
+      ],
+    );
+  }
+
+  Widget buildProductList(List<CartItemData>? productList) {
+    return Column(
+      children: productList?.map((product) {
+        return ProductItem(
+          name: product.coffeeData!.coffeeName.toString(),
+          price: product.coffeeData!.coffeePrice!.toDouble(),
+          quantity: product.quantity!.toInt(),
+          image: product.coffeeData!.coffeeImageUrl.toString(),
+        );
+      }).toList() ?? [],
+    );
+  }
+
+  Widget buildPaymentSummary(VoucherProvider typePrice) {
+    return Column(
+      children: [
+        SummaryItem(label: 'Giá', value: typePrice.originalPrice.toString()),
+        const SizedBox(height: 6),
+        SummaryItem(label: 'Khuyến mại', value: typePrice.totalDiscount.toString()),
+        const SizedBox(height: 6),
+        SummaryItem(label: 'Tổng tiền', value: typePrice.totalPriceAfterDiscount.toString(), isBold: true),
+      ],
+    );
+  }
+
+  Widget buildPaymentMethod() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: const [
+        Text('Phương thức thanh toán', style: TextStyle(fontSize: 14)),
+        SizedBox(height: 16),
+        Text(
+          'Credit or debit card',
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
+  Widget buildDeliveryInfo(OrderViewModel orderViewModel) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Địa chỉ giao hàng', style: TextStyle(fontSize: 14)),
+        const SizedBox(height: 16),
+        SummaryItem(label: 'Họ và Tên', value: orderViewModel.addItemResponse.data!.data!.address!.name.toString()),
+        const SizedBox(height: 6),
+        SummaryItem(label: 'Điện thoại', value: orderViewModel.addItemResponse.data!.data!.address!.phone.toString()),
+        const SizedBox(height: 6),
+        SummaryItem(label: 'Địa chỉ', value: orderViewModel.addItemResponse.data!.data!.address!.address.toString()),
+      ],
+    );
+  }
+
+  Widget buildBottomNavigation(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16.0),
+      color: Colors.white,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: ButtonPrimary(
+              title: 'Quay lại trang chủ',
+              onTap: () {
+                Navigator.pushNamed(context,RouteName.home);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -108,7 +187,7 @@ class ProductItem extends StatelessWidget {
   final int quantity;
   final String image;
 
-  ProductItem({
+  const ProductItem({
     required this.name,
     required this.price,
     required this.quantity,
@@ -121,19 +200,18 @@ class ProductItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
-          // Sử dụng Image.network để tải ảnh từ internet
           Image.network(image, width: 50, height: 50, fit: BoxFit.cover),
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                Text('Đồ uống Đá, Giảm bớt Đường, Bình thường Đá', style: TextStyle(fontSize: 12)),
+                Text(name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                const Text('Đồ uống Đá, Giảm bớt Đường, Bình thường Đá', style: TextStyle(fontSize: 12)),
               ],
             ),
           ),
-          Text('${price}vnd x $quantity', style: TextStyle(fontSize: 14)),
+          Text('${price}vnd x $quantity', style: const TextStyle(fontSize: 14)),
         ],
       ),
     );
@@ -146,7 +224,7 @@ class SummaryItem extends StatelessWidget {
   final String value;
   final bool isBold;
 
-  SummaryItem({
+  const SummaryItem({
     required this.label,
     required this.value,
     this.isBold = false,
@@ -159,7 +237,7 @@ class SummaryItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: 14)),
+          Text(label, style: const TextStyle(fontSize: 14)),
           Text(value, style: TextStyle(fontSize: 14, fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
         ],
       ),

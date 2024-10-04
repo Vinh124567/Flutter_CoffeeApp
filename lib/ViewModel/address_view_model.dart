@@ -8,9 +8,10 @@ class AddressViewModel with ChangeNotifier {
 
   Address? get selectedAddress => _selectedAddress; // Getter cho địa chỉ đã chọn
 
-  final _myRepo = AddressRepository(); // Tạo instance của AddressRepository
-  ApiResponse<AddressDTO> addressList = ApiResponse.loading(); // Trạng thái danh sách địa chỉ
-  ApiResponse<Address> createAddressResponse = ApiResponse.loading(); // Trạng thái tạo địa chỉ
+  final _myRepo = AddressRepository();
+  ApiResponse<AddressDTO> addressList = ApiResponse.loading();
+  ApiResponse<Address> createAddressResponse = ApiResponse.loading();
+  ApiResponse<String> updateAddressResponse = ApiResponse.loading();
 
   // Cập nhật địa chỉ đã chọn và thông báo cho UI
   void setSelectedAddress(Address? address) {
@@ -30,30 +31,29 @@ class AddressViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  // Hàm gọi API để lấy danh sách địa chỉ
+  void setUpdateAddressResponse(ApiResponse<String> response) {
+    updateAddressResponse = response;
+    notifyListeners();
+  }
+
   Future<void> fetchAddressListApi(String userId) async {
     setAddressList(ApiResponse.loading()); // Đặt trạng thái loading
     try {
-      AddressDTO addresses = await _myRepo.fetchAddressList(userId); // Gọi API để lấy địa chỉ
-      setAddressList(ApiResponse.completed(addresses)); // Cập nhật danh sách địa chỉ
-
-      // Nếu địa chỉ đã chọn không còn trong danh sách, giữ lại địa chỉ đã chọn
+      AddressDTO addresses = await _myRepo.fetchAddressList(userId);
+      setAddressList(ApiResponse.completed(addresses));
       if (_selectedAddress != null && !addresses.data!.contains(_selectedAddress)) {
-        // Nếu bạn muốn, bạn có thể giữ lại địa chỉ đã chọn bằng cách không đặt lại
-        // Hoặc, nếu bạn muốn đặt lại, hãy uncomment dòng dưới
-        // _selectedAddress = null;
       }
     } catch (error) {
-      setAddressList(ApiResponse.error(error.toString())); // Cập nhật phản hồi lỗi
+      setAddressList(ApiResponse.error(error.toString()));
     }
   }
 
   // Hàm gọi API để thêm địa chỉ
   Future<void> addAddressApi(Address address) async {
-    setCreateAddressResponse(ApiResponse.loading()); // Đặt trạng thái loading
+    setCreateAddressResponse(ApiResponse.loading());
     try {
-      Address newAddress = await _myRepo.createAddress(address); // Gọi API để thêm địa chỉ
-      setCreateAddressResponse(ApiResponse.completed(newAddress)); // Cập nhật phản hồi thành công
+      Address newAddress = await _myRepo.createAddress(address);
+      setCreateAddressResponse(ApiResponse.completed(newAddress));
     } catch (error, stacktrace) {
       // In lỗi ra console
       print('Lỗi khi thêm địa chỉ: $error');
@@ -61,6 +61,17 @@ class AddressViewModel with ChangeNotifier {
 
       // Cập nhật phản hồi lỗi
       setCreateAddressResponse(ApiResponse.error(error.toString()));
+    }
+  }
+
+  Future<void> updateAddress(Address address) async {
+    setUpdateAddressResponse(ApiResponse.loading());
+    try {
+      final response = await _myRepo.updateAddress(address);
+      setUpdateAddressResponse(ApiResponse.completed("Cập nhập thành công"));
+    } catch (error) {
+      print("Đã xảy ra lỗi: $error");
+      setUpdateAddressResponse(ApiResponse.error(error.toString()));
     }
   }
 }

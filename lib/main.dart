@@ -1,7 +1,7 @@
 import 'package:coffee_shop/Pages/consts.dart';
 import 'package:coffee_shop/ViewModel/auth_view_model.dart';
 import 'package:coffee_shop/ViewModel/cartitem_view_model.dart';
-import 'package:coffee_shop/ViewModel/home_view_model.dart';
+import 'package:coffee_shop/ViewModel/coffee_view_model.dart';
 import 'package:coffee_shop/ViewModel/order_view_model.dart';
 import 'package:coffee_shop/routes/route_name.dart';
 import 'package:coffee_shop/routes/routes.dart';
@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthViewModel()..checkLoginStatus()), // Kiểm tra đăng nhập khi khởi tạo
         ChangeNotifierProvider(create: (_) => VoucherViewModel()),
-        ChangeNotifierProvider(create: (_) => HomeViewModel()),
+        ChangeNotifierProvider(create: (_) => CoffeeViewModel()),
         ChangeNotifierProvider(create: (_) => AddressViewModel()),
         ChangeNotifierProvider(create: (_) => CartItemViewModel()),
         ChangeNotifierProvider(create: (_) => CategoriesViewModel()),

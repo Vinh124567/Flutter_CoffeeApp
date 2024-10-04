@@ -246,10 +246,12 @@ class _DeliverState extends State<Deliver> {
         quantity: item.quantity ?? 1,
         size: item.size ?? "",
       )).toList()
-      ..totalPrice = voucherProvider.totalPriceAfterDiscount
+      ..totalPrice = voucherProvider.originalPrice
       ..voucherCodes = voucherProvider.getVoucherCodes().cast<String>()
       ..userAddressId = addressViewModel.selectedAddress?.id
-      ..status = OrderStatus.pending.value;
+      ..status = OrderStatus.pending.value
+    ..totalAfterDiscount=voucherProvider.totalPriceAfterDiscount
+    ..discountAmount=voucherProvider.totalDiscount;
 
     print("Request order: $requestOrder");
 

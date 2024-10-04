@@ -17,10 +17,22 @@ class Utils{
         flushbar: Flushbar(
         message:message,
         backgroundColor: Colors.red,
-          title:"ERROR",
+          title:"Lỗi",
           messageColor: Colors.black,
           duration: Duration(seconds: 2),
     )..show(context),
+    );
+  }
+
+  static void flushBarSuccessMessage(String message,BuildContext context){
+    showFlushbar(context: context,
+      flushbar: Flushbar(
+        message:message,
+        backgroundColor: Colors.green,
+        title:"Thành công",
+        messageColor: Colors.black,
+        duration: Duration(seconds: 2),
+      )..show(context),
     );
   }
 
