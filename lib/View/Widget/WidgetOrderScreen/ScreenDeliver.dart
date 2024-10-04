@@ -128,7 +128,7 @@ class _DeliverState extends State<Deliver> {
         AddressViewModel>(
       builder: (context, authViewModel, orderViewModel, voucherProvider,
           noteProvider, addressViewModel, child) {
-        double totalPrice = voucherProvider.totalPriceAfterDiscount;
+        double? totalPrice = voucherProvider.totalPriceAfterDiscount;
         return Container(
           height: 60,
           padding: const EdgeInsets.symmetric(horizontal: 20),

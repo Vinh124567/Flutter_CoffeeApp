@@ -13,6 +13,7 @@ class ReceiptScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final orderViewModel = Provider.of<OrderViewModel>(context);
+    final voucherProvider = Provider.of<VoucherProvider>(context);
     final productList = orderViewModel.addItemResponse.data!.data!.orderItems;
     final typePrice = Provider.of<VoucherProvider>(context);
 
@@ -33,7 +34,7 @@ class ReceiptScreen extends StatelessWidget {
                 const SizedBox(height: 36),
                 buildTransactionInfo(orderViewModel),
                 const Divider(),
-                buildProductList(productList),
+                buildProductList(productList,orderViewModel),
                 const Divider(),
                 buildPaymentSummary(typePrice),
                 const Divider(),
@@ -43,7 +44,7 @@ class ReceiptScreen extends StatelessWidget {
               ],
             ),
           ),
-          buildBottomNavigation(context),
+          buildBottomNavigation(context,voucherProvider),
         ],
       ),
     );
@@ -105,7 +106,7 @@ class ReceiptScreen extends StatelessWidget {
     );
   }
 
-  Widget buildProductList(List<CartItemData>? productList) {
+  Widget buildProductList(List<CartItemData>? productList,OrderViewModel orderViewModel) {
     return Column(
       children: productList?.map((product) {
         return ProductItem(
@@ -113,6 +114,7 @@ class ReceiptScreen extends StatelessWidget {
           price: product.coffeeData!.coffeePrice!.toDouble(),
           quantity: product.quantity!.toInt(),
           image: product.coffeeData!.coffeeImageUrl.toString(),
+          note:orderViewModel.addItemResponse.data?.data!.notes??"Không có ghi chú"
         );
       }).toList() ?? [],
     );
@@ -159,7 +161,7 @@ class ReceiptScreen extends StatelessWidget {
     );
   }
 
-  Widget buildBottomNavigation(BuildContext context) {
+  Widget buildBottomNavigation(BuildContext context,VoucherProvider voucherProvider) {
     return Container(
       padding: const EdgeInsets.all(16.0),
       color: Colors.white,
@@ -170,6 +172,7 @@ class ReceiptScreen extends StatelessWidget {
             child: ButtonPrimary(
               title: 'Quay lại trang chủ',
               onTap: () {
+                voucherProvider.resetValues();
                 Navigator.pushNamed(context,RouteName.home);
               },
             ),
@@ -186,12 +189,13 @@ class ProductItem extends StatelessWidget {
   final double price;
   final int quantity;
   final String image;
-
+  final String note;
   const ProductItem({
     required this.name,
     required this.price,
     required this.quantity,
     required this.image,
+    required this.note,
   });
 
   @override

@@ -189,6 +189,7 @@ class OrderDetailPage extends StatelessWidget {
           price: product.coffeeData!.coffeePrice!.toDouble(),
           quantity: product.quantity!.toInt(),
           image: product.coffeeData!.coffeeImageUrl.toString(),
+          note: orderResponseData.notes??"Không có",
         );
       }).toList() ?? [],
     );
