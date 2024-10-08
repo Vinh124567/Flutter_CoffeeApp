@@ -15,7 +15,6 @@ class ReceiptScreen extends StatelessWidget {
     final orderViewModel = Provider.of<OrderViewModel>(context);
     final voucherProvider = Provider.of<VoucherProvider>(context);
     final productList = orderViewModel.addItemResponse.data!.data!.orderItems;
-    final typePrice = Provider.of<VoucherProvider>(context);
 
     return Scaffold(
       body: ListView(
@@ -36,7 +35,7 @@ class ReceiptScreen extends StatelessWidget {
                 const Divider(),
                 buildProductList(productList,orderViewModel),
                 const Divider(),
-                buildPaymentSummary(typePrice),
+                buildPaymentSummary(orderViewModel),
                 const Divider(),
                 buildPaymentMethod(),
                 const Divider(),
@@ -120,14 +119,14 @@ class ReceiptScreen extends StatelessWidget {
     );
   }
 
-  Widget buildPaymentSummary(VoucherProvider typePrice) {
+  Widget buildPaymentSummary(OrderViewModel orderViewModel) {
     return Column(
       children: [
-        SummaryItem(label: 'Giá', value: typePrice.originalPrice.toString()),
+        SummaryItem(label: 'Giá', value: orderViewModel.addItemResponse.data!.data!.totalPrice.toString()),
         const SizedBox(height: 6),
-        SummaryItem(label: 'Khuyến mại', value: typePrice.totalDiscount.toString()),
+        SummaryItem(label: 'Khuyến mại', value: orderViewModel.addItemResponse.data!.data!.discountAmount.toString()),
         const SizedBox(height: 6),
-        SummaryItem(label: 'Tổng tiền', value: typePrice.totalPriceAfterDiscount.toString(), isBold: true),
+        SummaryItem(label: 'Tổng tiền', value: orderViewModel.addItemResponse.data!.data!.totalAfterDiscount.toString()),
       ],
     );
   }
@@ -211,7 +210,7 @@ class ProductItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                const Text('Đồ uống Đá, Giảm bớt Đường, Bình thường Đá', style: TextStyle(fontSize: 12)),
+                Text("Ghi chú: "+ note, style: TextStyle(fontSize: 12)),
               ],
             ),
           ),

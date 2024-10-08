@@ -1,16 +1,24 @@
 import 'package:coffee_shop/Model/Cart/cart_response.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../Model/Coffees/coffee_response.dart';
+import '../../../ViewModel/address_view_model.dart';
+import '../../../ViewModel/order_view_model.dart';
+import '../../StateDeliverScreen/payment_method_provider.dart';
+import '../../StateDeliverScreen/voucher_provider.dart';
 import 'ScreenDeliver.dart';
 import 'TabItem.dart';
 
 class OrderTabScreen extends StatelessWidget {
   final List<CartItemData> items;
 
-  const OrderTabScreen({super.key, required this.items});
-
+  OrderTabScreen({super.key, required this.items});
   @override
   Widget build(BuildContext context) {
+    // Lấy instance của Provider trong build method
+    final paymentMethodProvider = Provider.of<PaymentMethodProvider>(context);
+    final addressViewModel = Provider.of<AddressViewModel>(context);
+    final voucherProvider = Provider.of<VoucherProvider>(context); // Đảm
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -18,7 +26,11 @@ class OrderTabScreen extends StatelessWidget {
           title: const Text("Order", style: TextStyle(fontSize: 16)),
           centerTitle: true,
           leading: IconButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              paymentMethodProvider.setPaymentMethod(null);
+              addressViewModel.setSelectedAddress(null);
+              voucherProvider.clearVouchers(); // Giả sử bạn có phương thức để reset voucher
+              Navigator.pop(context);},
             icon: const ImageIcon(
               AssetImage('assets/images/ic_arrow_left.png'),
             ),

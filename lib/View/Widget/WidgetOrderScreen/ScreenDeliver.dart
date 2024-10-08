@@ -33,6 +33,7 @@ class _DeliverState extends State<Deliver> {
   @override
   Widget build(BuildContext context) {
     final paymentMethodProvider = Provider.of<PaymentMethodProvider>(context);
+    final addressViewModel = Provider.of<AddressViewModel>(context);
 
     return Scaffold(
       body: Container(
@@ -116,11 +117,11 @@ class _DeliverState extends State<Deliver> {
           ),
         ),
       ),
-      bottomNavigationBar: buildPrice(context, paymentMethodProvider),
+      bottomNavigationBar: buildPrice(context, paymentMethodProvider,addressViewModel),
     );
   }
 
-  Widget buildPrice(BuildContext context, PaymentMethodProvider paymentMethodProvider) {
+  Widget buildPrice(BuildContext context, PaymentMethodProvider paymentMethodProvider,AddressViewModel addressViewModel) {
     return Consumer5<AuthViewModel,
         OrderViewModel,
         VoucherProvider,
@@ -171,13 +172,24 @@ class _DeliverState extends State<Deliver> {
               ElevatedButton(
                 onPressed: () async {
                   // Kiểm tra xem có phương thức thanh toán được chọn không
-                  if (paymentMethodProvider.selectedPaymentMethod == null ||
-                      paymentMethodProvider.selectedPaymentMethod!.isEmpty) {
+                  final bool isPaymentMethodNotSelected = paymentMethodProvider.selectedPaymentMethod == null ||
+                      paymentMethodProvider.selectedPaymentMethod!.isEmpty;
+
+                  final bool isAddressNotSelected = addressViewModel.selectedAddress == null;
+
+                  if (isPaymentMethodNotSelected) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("Vui lòng chọn phương thức thanh toán!")),
                     );
                     return; // Ngừng thực hiện nếu không có phương thức thanh toán
                   }
+                  if (isAddressNotSelected) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Vui lòng chọn địa chỉ giao hàng!")),
+                    );
+                    return; // Ngừng thực hiện nếu không có địa chỉ giao hàng
+                  }
+
 
                   bool paymentSuccess = false;
 
@@ -228,18 +240,59 @@ class _DeliverState extends State<Deliver> {
     );
   }
 
-  Future<void> _createOrder(AuthViewModel authViewModel,
+  // Future<void> _createOrder(AuthViewModel authViewModel,
+  //     OrderViewModel orderViewModel,
+  //     VoucherProvider voucherProvider,
+  //     NoteProvider noteProvider,
+  //     AddressViewModel addressViewModel,
+  //     PaymentMethodProvider paymentMethodProvider,
+  //     bool paymentSuccess) async {
+  //   OrderCreateRequest requestOrder = OrderCreateRequest()
+  //     ..userId = authViewModel.user?.uid.toString()
+  //     ..paymentStatus = paymentMethodProvider.selectedPaymentMethod == "Thanh toán Online" && paymentSuccess
+  //         ? PaymentStatus.paid.value // Nếu thanh toán online và thành công
+  //         : PaymentStatus.not_yet_paid.value // Nếu là thanh toán khi giao hàng hoặc thanh toán online thất bại
+  //     ..notes = noteProvider.note.toString()
+  //     ..orderItems = widget.items.map((item) => OrderItemDTO(
+  //       coffeeId: item.coffeeData?.coffeeId ?? 0,
+  //       quantity: item.quantity ?? 1,
+  //       size: item.size ?? "",
+  //     )).toList()
+  //     ..totalPrice = voucherProvider.originalPrice
+  //     ..voucherCodes = voucherProvider.getVoucherCodes().cast<String>()
+  //     ..userAddressId = addressViewModel.selectedAddress?.id
+  //     ..status = OrderStatus.pending.value
+  //   ..totalAfterDiscount=voucherProvider.totalPriceAfterDiscount
+  //   ..discountAmount=voucherProvider.totalDiscount;
+  //
+  //   print("Request order: $requestOrder");
+  //
+  //   // Gọi API và nhận phản hồi
+  //   var response = await orderViewModel.newOrderApi(requestOrder);
+  //   // Xử lý phản hồi từ API
+  //   if (response.status == Status.COMPLETED) {
+  //     print("Order created successfully!");
+  //     Navigator.pushNamed(context, RouteName.receipt);
+  //   } else if (response.status == Status.ERROR) {
+  //     print("Failed to create order: ${response.message}");
+  //     // Hiển thị thông báo lỗi
+  //   }
+  // }
+
+  Future<void> _createOrder(
+      AuthViewModel authViewModel,
       OrderViewModel orderViewModel,
       VoucherProvider voucherProvider,
       NoteProvider noteProvider,
       AddressViewModel addressViewModel,
       PaymentMethodProvider paymentMethodProvider,
       bool paymentSuccess) async {
+
     OrderCreateRequest requestOrder = OrderCreateRequest()
       ..userId = authViewModel.user?.uid.toString()
       ..paymentStatus = paymentMethodProvider.selectedPaymentMethod == "Thanh toán Online" && paymentSuccess
-          ? PaymentStatus.paid.value // Nếu thanh toán online và thành công
-          : PaymentStatus.not_yet_paid.value // Nếu là thanh toán khi giao hàng hoặc thanh toán online thất bại
+          ? PaymentStatus.paid.value
+          : PaymentStatus.not_yet_paid.value
       ..notes = noteProvider.note.toString()
       ..orderItems = widget.items.map((item) => OrderItemDTO(
         coffeeId: item.coffeeData?.coffeeId ?? 0,
@@ -250,16 +303,24 @@ class _DeliverState extends State<Deliver> {
       ..voucherCodes = voucherProvider.getVoucherCodes().cast<String>()
       ..userAddressId = addressViewModel.selectedAddress?.id
       ..status = OrderStatus.pending.value
-    ..totalAfterDiscount=voucherProvider.totalPriceAfterDiscount
-    ..discountAmount=voucherProvider.totalDiscount;
+      ..totalAfterDiscount = voucherProvider.totalPriceAfterDiscount
+      ..discountAmount = voucherProvider.totalDiscount;
 
     print("Request order: $requestOrder");
 
     // Gọi API và nhận phản hồi
     var response = await orderViewModel.newOrderApi(requestOrder);
+
     // Xử lý phản hồi từ API
     if (response.status == Status.COMPLETED) {
       print("Order created successfully!");
+
+      // Đặt lại các giá trị về null hoặc giá trị mặc định
+      paymentMethodProvider.setPaymentMethod(null);
+      addressViewModel.setSelectedAddress(null);
+      voucherProvider.clearVouchers(); // Giả sử bạn có phương thức để reset voucher
+
+      // Điều hướng sang màn hình hóa đơn
       Navigator.pushNamed(context, RouteName.receipt);
     } else if (response.status == Status.ERROR) {
       print("Failed to create order: ${response.message}");

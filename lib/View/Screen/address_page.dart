@@ -93,6 +93,7 @@ class AddressPage extends StatelessWidget {
                                         groupValue: addressViewModel.selectedAddress, // Sử dụng selectedAddress làm groupValue
                                         onChanged: (Address? value) {
                                           addressViewModel.setSelectedAddress(value);
+                                          Navigator.pop(context);
                                         },
                                         activeColor: Colors.blue,
                                       ),
@@ -129,7 +130,9 @@ class AddressPage extends StatelessWidget {
                                             context,
                                             RouteName.edit_address_page,
                                             arguments: address,
-                                          );
+                                          ).then((_) {
+                                            addressViewModel.fetchAddressListApi(authViewModel.user!.uid.toString());
+                                          });;
                                         },
                                       ),
                                     ],
