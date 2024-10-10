@@ -1,6 +1,6 @@
 class CartItemCreateDTO {
  String? userId;
- int? coffeeId; // Thay Long bằng int vì Dart không có kiểu Long
+ int? coffeeId;
  String? size;
  String? quantity;
 

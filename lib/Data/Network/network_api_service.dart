@@ -5,8 +5,6 @@ import 'package:coffee_shop/Data/app_exceptions.dart';
 import 'package:http/http.dart';
 
 class NetworkApiService extends BaseApiService {
-
-
   @override
   Future getGetApiResponse(String url) async{
     dynamic responseJson;
@@ -47,7 +45,7 @@ class NetworkApiService extends BaseApiService {
       ).timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
-      throw FetchDataException('No Internet Connection');
+      throw FetchDataException('Không có internet');
     }
     return responseJson;
   }
@@ -67,7 +65,7 @@ class NetworkApiService extends BaseApiService {
       case 405:
         throw BadRequestException(response.body.toString());
       default:
-        throw FetchDataException('Error accured while communicating with server with status code ${response.statusCode}');
+        throw FetchDataException('Đã xảy ra lỗi khi giao tiếp với máy chủ với mã trạng thái ${response.statusCode}');
     }
   }
 
@@ -78,7 +76,7 @@ class NetworkApiService extends BaseApiService {
       final response = await delete(Uri.parse(url)).timeout(const Duration(seconds: 10));
       responseJson = returnResponse(response);
     } on SocketException {
-      throw FetchDataException('No Internet Connection');
+      throw FetchDataException('Không có internet');
     }
     return responseJson;
   }

@@ -1,7 +1,7 @@
 import 'package:coffee_shop/Model/Cart/cart_response.dart';
 import 'package:coffee_shop/Model/Order/order_response.dart';
 import 'package:coffee_shop/View/Screen/add_address_page.dart';
-import 'package:coffee_shop/View/Screen/cart_screen.dart';
+import 'package:coffee_shop/View/Screen/cart_page.dart';
 import 'package:coffee_shop/View/Screen/dashboard_page.dart';
 import 'package:coffee_shop/View/Screen/detail_screen.dart';
 import 'package:coffee_shop/View/Screen/edit_address.dart';
@@ -11,16 +11,16 @@ import 'package:coffee_shop/View/Screen/order_detail_page.dart';
 import 'package:coffee_shop/View/Screen/rating_page.dart';
 import 'package:coffee_shop/View/Screen/receip_page.dart';
 import 'package:coffee_shop/View/Screen/payment_method_screen.dart';
-import 'package:coffee_shop/View/Screen/change_password.dart';
+import 'package:coffee_shop/View/Screen/change_password_page.dart';
 import 'package:coffee_shop/routes/route_name.dart';
 import 'package:flutter/material.dart';
 import '../Model/address_dto.dart';
 import '../Model/Coffees/coffee_response.dart';
-import '../View/Screen/RegisterScreen.dart';
+import '../View/Screen/register_page.dart';
 import '../View/Screen/address_page.dart';
 import '../View/Screen/login_screen.dart';
 import '../View/Screen/order_screen.dart';
-import '../View/Screen/voucher_screen.dart';
+import '../View/Screen/voucher_page.dart';
 
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings setting) {
@@ -62,7 +62,7 @@ class Routes {
         );
       case RouteName.my_order:
         return MaterialPageRoute(
-          builder: (BuildContext context) => DashboardPage(initialIndex: 2), // Điều hướng đến DashboardPage với MyOrderPage
+          builder: (BuildContext context) => DashboardPage(initialIndex: 2),
         );
       case RouteName.order_detail:
         final OrderResponseData orderResponseData =

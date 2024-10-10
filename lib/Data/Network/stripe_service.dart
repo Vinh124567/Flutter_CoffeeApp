@@ -6,26 +6,6 @@ class StripeService {
   StripeService._();
 
   static final StripeService instance = StripeService._();
-
-  // onPressed: () {  StripeService.instance.makePayment(); },
-  // Future<void> makePayment() async {
-  //   try {
-  //     String? paymentIntentClientSecret = await _createPaymentIntent(
-  //       10,
-  //       "usd",
-  //     );
-  //     if (paymentIntentClientSecret != null) {
-  //       await Stripe.instance.initPaymentSheet(
-  //           paymentSheetParameters: SetupPaymentSheetParameters(
-  //             paymentIntentClientSecret: paymentIntentClientSecret,
-  //             merchantDisplayName: "Hussain Mustafa",
-  //           ));
-  //       await _processPayment();
-  //     }
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
   Future<bool> makePayment() async {
     try {
       String? paymentIntentClientSecret = await _createPaymentIntent(

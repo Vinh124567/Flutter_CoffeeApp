@@ -1,6 +1,6 @@
 import 'package:coffee_shop/Model/Enum/OrderStatus.dart';
-import 'package:coffee_shop/View/Screen/cart_screen.dart';
-import 'package:coffee_shop/View/Screen/user_screen.dart';
+import 'package:coffee_shop/View/Screen/cart_page.dart';
+import 'package:coffee_shop/View/Screen/user_page.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 

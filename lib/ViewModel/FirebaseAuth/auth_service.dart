@@ -5,8 +5,6 @@ import '../../Utils/utils.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  // Đăng nhập bằng email và mật khẩu
   Future<User?> signInWithEmailAndPassword(String email, String password,BuildContext context) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(

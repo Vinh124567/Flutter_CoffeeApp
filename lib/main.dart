@@ -28,7 +28,6 @@ Future<void> _setUp()async{
   Stripe.publishableKey=stripePublishableKey;
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -36,7 +35,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthViewModel()..checkLoginStatus()), // Kiểm tra đăng nhập khi khởi tạo
+        ChangeNotifierProvider(create: (_) => AuthViewModel()..checkLoginStatus()),
         ChangeNotifierProvider(create: (_) => VoucherViewModel()),
         ChangeNotifierProvider(create: (_) => CoffeeViewModel()),
         ChangeNotifierProvider(create: (_) => AddressViewModel()),

@@ -1,7 +1,7 @@
 
-import 'package:coffee_shop/View/Screen/cart_screen.dart';
+import 'package:coffee_shop/View/Screen/cart_page.dart';
 import 'package:coffee_shop/View/Screen/my_order_page.dart';
-import 'package:coffee_shop/View/Screen/user_screen.dart';
+import 'package:coffee_shop/View/Screen/user_page.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
